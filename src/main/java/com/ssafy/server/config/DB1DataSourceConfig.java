@@ -19,6 +19,7 @@ public class DB1DataSourceConfig {
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/db1/*.xml"));
+        factoryBean.setTypeAliasesPackage("com.ssafy.server.model.dto");
         return factoryBean.getObject();
     }
 

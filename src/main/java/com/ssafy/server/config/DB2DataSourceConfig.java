@@ -19,6 +19,7 @@ public class DB2DataSourceConfig {
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
         factoryBean.setDataSource(dataSource);
         factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/db2/*.xml"));
+        factoryBean.setTypeAliasesPackage("com.ssafy.server.model.dto");
         return factoryBean.getObject();
     }
 

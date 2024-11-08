@@ -1,29 +1,24 @@
 package com.ssafy.server.model.dto;
 
-import com.fasterxml.jackson.databind.DatabindException;
-
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
-
-public class User {
+public class KakaoUser {
     private int userId;
-    private String email, kakaoId, nickname, userName, profileImage, password, address, phoneNumber;
+    private String kakaoId, nickname, userName, profileImage, address, phoneNumber;
     private boolean agreeCondition;
     private LocalDateTime createdAt;
 
-
-    public User() {
+    public KakaoUser() {
         super();
     }
 
-    public User(int userId, String email, String kakaoId, String nickname, String userName, String profileImage, String password, String address, String phoneNumber, boolean agreeCondition, LocalDateTime createdAt) {
+    public KakaoUser(int userId, String kakaoId, String nickname, String userName, String profileImage, String address, String phoneNumber, boolean agreeCondition, LocalDateTime createdAt) {
         this.userId = userId;
-        this.email = email;
         this.kakaoId = kakaoId;
         this.nickname = nickname;
         this.userName = userName;
         this.profileImage = profileImage;
-        this.password = password;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.agreeCondition = agreeCondition;
@@ -36,14 +31,6 @@ public class User {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getKakaoId() {
@@ -76,14 +63,6 @@ public class User {
 
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getAddress() {
@@ -120,14 +99,12 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "KakaoUser{" +
                 "userId=" + userId +
-                ", email='" + email + '\'' +
                 ", kakaoId='" + kakaoId + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", userName='" + userName + '\'' +
                 ", profileImage='" + profileImage + '\'' +
-                ", password='" + password + '\'' +
                 ", address='" + address + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", agreeCondition=" + agreeCondition +
