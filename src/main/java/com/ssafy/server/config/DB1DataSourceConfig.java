@@ -20,6 +20,11 @@ public class DB1DataSourceConfig {
         factoryBean.setDataSource(dataSource);
         factoryBean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/db1/*.xml"));
         factoryBean.setTypeAliasesPackage("com.ssafy.server.model.dto");
+
+        org.apache.ibatis.session.Configuration myBatisConfig = new org.apache.ibatis.session.Configuration();
+        myBatisConfig.setMapUnderscoreToCamelCase(true); // 언더스코어를 카멜 케이스로 매핑
+        factoryBean.setConfiguration(myBatisConfig);
+
         return factoryBean.getObject();
     }
 
