@@ -37,7 +37,7 @@ public class UserController {
 
 
     @GetMapping("/get-user")
-    public ResponseEntity<User> getUser(@RequestBody int userId){
+    public ResponseEntity<User> getUser(@RequestParam int userId){
         User user = userService.getUser(userId);
         if (user != null) {
             return ResponseEntity.ok(user);
