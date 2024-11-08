@@ -12,6 +12,8 @@ public interface UserMapper {
 
     User selectUser(int userId);
 
+    User selectUserByEmail(String email);
+
     List<User> selectAllUsers();
 
     int updateUser(User user);
