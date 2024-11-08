@@ -13,5 +13,6 @@
     <select id="selectSalt" parameterType="int" resultType="String">
         SELECT salt
         FROM secure_info
+        WHERE user_id=#{userId}
     </select>
 </mapper>
