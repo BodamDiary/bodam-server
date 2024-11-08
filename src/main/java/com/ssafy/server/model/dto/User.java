@@ -1,22 +1,22 @@
 package com.ssafy.server.model.dto;
 
 import com.fasterxml.jackson.databind.DatabindException;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-
+@Builder
 public class User {
     private int userId;
     private String email, kakaoId, nickname, userName, profileImage, password, address, phoneNumber;
-    private boolean agreeCondition;
+    private boolean agreeCondition, isOauth;
     private LocalDateTime createdAt;
-
 
     public User() {
         super();
     }
 
-    public User(int userId, String email, String kakaoId, String nickname, String userName, String profileImage, String password, String address, String phoneNumber, boolean agreeCondition, LocalDateTime createdAt) {
+    public User(int userId, String email, String kakaoId, String nickname, String userName, String profileImage, String password, String address, String phoneNumber, boolean agreeCondition, boolean isOauth, LocalDateTime createdAt) {
         this.userId = userId;
         this.email = email;
         this.kakaoId = kakaoId;
@@ -27,6 +27,7 @@ public class User {
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.agreeCondition = agreeCondition;
+        this.isOauth = isOauth;
         this.createdAt = createdAt;
     }
 
@@ -110,6 +111,14 @@ public class User {
         this.agreeCondition = agreeCondition;
     }
 
+    public boolean isOauth() {
+        return isOauth;
+    }
+
+    public void setOauth(boolean oauth) {
+        isOauth = oauth;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -131,6 +140,7 @@ public class User {
                 ", address='" + address + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", agreeCondition=" + agreeCondition +
+                ", isOauth=" + isOauth +
                 ", createdAt=" + createdAt +
                 '}';
     }
