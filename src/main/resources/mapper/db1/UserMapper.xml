@@ -4,13 +4,38 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.server.model.dao.UserMapper">
     <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
-        INSERT INTO users (email, kakao_id, nickname, user_name, password, profile_image, address, phone_number, agree_condition, created_at)
-        VALUES (#{email}, #{kakaoId}, #{nickname}, #{userName}, #{password}, #{profileImage}, #{address}, #{phoneNumber}, #{agreeCondition}, #{createdAt})
+        INSERT INTO users (email, kakao_id, nickname, user_name, password, profile_image, address, phone_number, agree_condition, is_oauth, created_at)
+        VALUES (#{email}, #{kakaoId}, #{nickname}, #{userName}, #{password}, #{profileImage}, #{address}, #{phoneNumber}, #{agreeCondition}, #{isOauth}, #{createdAt})
     </insert>
 
-    <select id="selectUser" parameterType="String" resultType="User">
-        SELECT * FROM users
-        WHERE email=#{email}
+    <select id="selectUser" parameterType="int" resultType="User">
+        SELECT *
+        FROM users
+        WHERE user_id = #{userId}
     </select>
+
+    <select id="selectUserByEmail" parameterType="String" resultType="User">
+        SELECT *
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <select id="selectAllUsers" resultType="User">
+        SELECT *
+        FROM users
+    </select>
+
+    <update id="updateUser" parameterType="User">
+        UPDATE users
+        SET kakao_id = #{kakaoId}, nickname=#{nickname}, user_name=#{userName}, password=#{password}, profile_image=#{profileImage}, address=#{address}, phone_number=#{phoneNumber},
+        agree_condition = CASE WHEN #{agreeCondition} = true THEN 1 ELSE 0 END,
+        is_oauth = CASE WHEN #{isOauth} = true THEN 1 ELSE 0 END
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM users
+        WHERE user_id = #{userId}
+    </delete>
 
 </mapper>

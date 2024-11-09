@@ -31,7 +31,7 @@ public class LoginTest {
         String email = "string";
 
         // when
-        User user = userMapper.selectUser(email);
+        User user = userMapper.selectUserByEmail(email);
 
         // then
         Assertions.assertThat(user.getUserName()).isEqualTo("string");

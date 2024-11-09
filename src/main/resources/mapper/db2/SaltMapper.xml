@@ -4,6 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ssafy.server.model.daosc.SaltMapper">
+
     <insert id="insertSecuInfo" parameterType="map">
         INSERT INTO secure_info (user_id, salt)
         VALUES (#{userId}, #{salt})
@@ -12,5 +13,6 @@
     <select id="selectSalt" parameterType="int" resultType="String">
         SELECT salt
         FROM secure_info
+        WHERE user_id=#{userId}
     </select>
 </mapper>
