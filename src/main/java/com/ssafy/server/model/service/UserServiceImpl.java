@@ -22,9 +22,10 @@ public class UserServiceImpl implements UserService{
     public int registUser(User user) {
         String salt = OpenCrypt.encryptPw(user);
 
+        int res = userMapper.insertUser(user);
         saltMapper.insertSecuInfo(user.getUserId(), salt);
 
-        return userMapper.insertUser(user);
+        return res;
     }
 
     @Override
