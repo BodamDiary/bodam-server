@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 @Service
@@ -18,14 +19,26 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private SaltMapper saltMapper;
 
+    private static final String PW_PATTERN =
+            "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,16}$";
+
+
     @Override
     public int registUser(User user) {
-        String salt = OpenCrypt.encryptPw(user);
+        String pw = user.getPassword();
 
-        int res = userMapper.insertUser(user);
-        saltMapper.insertSecuInfo(user.getUserId(), salt);
+        Pattern pattern = Pattern.compile(PW_PATTERN);
+        boolean isPwValid = pattern.matcher(pw).matches();
 
-        return res;
+        if (isPwValid) {
+            String salt = OpenCrypt.encryptPw(user);
+            int res = userMapper.insertUser(user);
+            saltMapper.insertSecuInfo(user.getUserId(), salt);
+
+            return res;
+        } else {
+            return -1;
+        }
     }
 
     @Override
