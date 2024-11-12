@@ -2,6 +2,7 @@ package com.ssafy.server.controller;
 
 import com.ssafy.server.model.dto.User;
 import com.ssafy.server.model.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +25,6 @@ public class UserController {
 
     @Autowired
     UserService userService;
-
 
     @PostMapping("/regist-user")
     public ResponseEntity<String> registUser(@RequestBody User user){
