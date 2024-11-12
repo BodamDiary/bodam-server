@@ -74,15 +74,9 @@ public class OAuthController {
 
         // STEP5: 강제 로그인
         // 세션에 회원 정보 저장 & 세션 유지 시간 설정
-        if (kakaoMember != null) {
-            session.setAttribute("loginMember", kakaoMember);
-            // session.setMaxInactiveInterval( ) : 세션 타임아웃을 설정하는 메서드
-            // 로그인 유지 시간 설정 (1800초 == 30분)
-            session.setMaxInactiveInterval(60 * 30);
-            // 로그아웃 시 사용할 카카오토큰 추가
-            session.setAttribute("kakaoToken", accessToken);
-        } else {
-            return "redirect:http://localhost:3000/signup";
+        if (kakaoMember == null) {
+            System.out.println("redirect to kakao register");
+            return "redirect:http://localhost:3000/kakao-signup?email=" + kakaoInfo.getEmail();
         }
 
         return "redirect:http://localhost:3000/";
@@ -104,8 +98,6 @@ public class OAuthController {
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-            session.removeAttribute("kakaoToken");
-            session.removeAttribute("loginMember");
         }else{
             System.out.println("accessToken is null");
         }
