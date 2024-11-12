@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping
 public class OAuthController {
 
     @Autowired
@@ -31,11 +30,13 @@ public class OAuthController {
      */
     @GetMapping(value="/kakao")
     public String kakaoConnect() {
+        System.out.println("kakao");
         StringBuffer url = new StringBuffer();
         url.append("https://kauth.kakao.com/oauth/authorize?");
         url.append("client_id="+clientId);
         url.append("&redirect_uri="+redirectUri);
         url.append("&response_type=code");
+        url.append("&prompt=select_account");
         return "redirect:" + url.toString();
     }
 
@@ -80,9 +81,11 @@ public class OAuthController {
             session.setMaxInactiveInterval(60 * 30);
             // 로그아웃 시 사용할 카카오토큰 추가
             session.setAttribute("kakaoToken", accessToken);
+        } else {
+            return "redirect:http://localhost:3000/signup";
         }
 
-        return "redirect:/";
+        return "redirect:http://localhost:3000/";
     }
 
 
