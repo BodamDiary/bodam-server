@@ -2,33 +2,35 @@ package com.ssafy.server.model.dto;
 
 import com.fasterxml.jackson.databind.DatabindException;
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
 @Builder
 public class User {
     private int userId;
-    private String email, kakaoId, nickname, userName, profileImage, password, address, phoneNumber;
+    private String email, kakaoId, nickname, userName, password, address, phoneNumber;
     private boolean agreeCondition, isOauth;
     private LocalDateTime createdAt;
+    private MultipartFile profileImage;
 
     public User() {
         super();
     }
 
-    public User(int userId, String email, String kakaoId, String nickname, String userName, String profileImage, String password, String address, String phoneNumber, boolean agreeCondition, boolean isOauth, LocalDateTime createdAt) {
+    public User(int userId, String email, String kakaoId, String nickname, String userName, String password, String address, String phoneNumber, boolean agreeCondition, boolean isOauth, LocalDateTime createdAt, MultipartFile profileImage) {
         this.userId = userId;
         this.email = email;
         this.kakaoId = kakaoId;
         this.nickname = nickname;
         this.userName = userName;
-        this.profileImage = profileImage;
         this.password = password;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.agreeCondition = agreeCondition;
         this.isOauth = isOauth;
         this.createdAt = createdAt;
+        this.profileImage = profileImage;
     }
 
     public int getUserId() {
@@ -69,14 +71,6 @@ public class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
     }
 
     public String getPassword() {
@@ -125,6 +119,14 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public MultipartFile getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(MultipartFile profileImage) {
+        this.profileImage = profileImage;
     }
 
     @Override
