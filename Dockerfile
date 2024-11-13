@@ -1,4 +1,4 @@
-FROM amazoncorrecto:17-alpine-jdk
+FROM amazoncorreto:17-alpine-jdk
 ARG JAR_FILE=target/*.jar
 ARG PROFILES
 ARG ENV
