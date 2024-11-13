@@ -47,4 +47,5 @@ jobs:
                 sudo docker stop prod_server
                 sudo docker rm prod_server
             fi
-            sudo docker-compose -f docker-compose.yml up -d
+            Cd /home/ubuntu
+            sudo docker-compose -f docker-compose-prod.yml up -d
