@@ -24,6 +24,9 @@ public class OAuthController {
     @Value("${kakao.redirect.uri}")
     String redirectUri;
 
+    @Value("${server.address}")
+    private String serverAddress;
+
     /**
      * 카카오 로그인 요청
      * @return
@@ -76,7 +79,7 @@ public class OAuthController {
         // 세션에 회원 정보 저장 & 세션 유지 시간 설정
         if (kakaoMember == null) {
             System.out.println("redirect to kakao register");
-            return "redirect:http://localhost:3000/kakao-signup?email=" + kakaoInfo.getEmail();
+            return "redirect:http://" + ("localhost".equals(serverAddress) ? "localhost:8080" : serverAddress)  +"/kakao-signup?email=" + kakaoInfo.getEmail();
         }
 
         return "redirect:http://localhost:3000/";
