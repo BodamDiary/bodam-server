@@ -1,6 +1,7 @@
 package com.ssafy.server.model.service;
 
 import com.ssafy.server.model.dto.User;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -103,14 +104,47 @@ class UserServiceImplTest {
         // then
     }
 
-    @DisplayName("비밀번호 복잡도 검증 (일반 회원가입)")
+    @DisplayName("비밀번호 복잡도 검증 영문자 없어서 실패")
     @Test
-    void passwordComplexityTest(){
+    void passwordComplexityTestNoAlphabet(){
         // given
-
+        user.setPassword("1234123@@!!!");
         // when
-
+        int res = userService.registUser(user);
         // then
+        Assertions.assertThat(res).isEqualTo(-1);
     }
 
+    @Test
+    @DisplayName("비밀번호 복잡도 검증 숫자 없어서 실패")
+    void passwordComplexityTestNoNumber(){
+        // given
+        user.setPassword("syoon!!@@");
+        // when
+        int res = userService.registUser(user);
+        // then
+        Assertions.assertThat(res).isEqualTo(-1);
+    }
+
+    @Test
+    @DisplayName("비밀번호 복잡도 검증 특수문자 없어서 실패")
+    void passwordComplexityTestNoSpecialCharacter(){
+        // given
+        user.setPassword("syoon4486");
+        // when
+        int res = userService.registUser(user);
+        // then
+        Assertions.assertThat(res).isEqualTo(-1);
+    }
+
+    @Test
+    @DisplayName("비밀번호 복잡도 검증 성공")
+    void passwordComplexitySuccess(){
+        // given
+        user.setPassword("syoon4486!");
+        // when
+        int res = userService.registUser(user);
+        // then
+        Assertions.assertThat(res).isEqualTo(0);
+    }
 }
