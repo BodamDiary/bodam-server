@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.server.model.dto.KakaoInfo;
 import com.ssafy.server.model.dto.User;
+import com.ssafy.server.util.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -28,8 +29,9 @@ public class OAuthService {
     String clientId;
     @Value("${kakao.redirect.uri}")
     String redirectUri;
-//    @Value("${kakao.client.secret}")
-//    String clientSecret;
+
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
     public String getAccessToken(String code) throws JsonProcessingException {
         // HTTP Header 생성
