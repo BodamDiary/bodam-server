@@ -19,7 +19,7 @@ import java.util.Set;
 @Service
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret.key}")
+//    @Value("${jwt.secret.key}")
     String secretKey;
 
     // JWT 발급 메서드
