@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,13 +87,21 @@ public class OAuthController {
         User kakaoMember = oAuthService.ifNeedKakaoInfo(kakaoInfo);
         String email = kakaoInfo.getEmail();
 
-        String token = jwtTokenProvider.generateJwt(email);
-        Cookie cookie = new Cookie("token", token);
-        Cookie cookie2 = new Cookie("email", email);
-        response.addCookie(cookie);
-        response.addCookie(cookie2);
+//        String token = jwtTokenProvider.generateJwt(email);
+//        Cookie cookie = new Cookie("token", token);
+//        Cookie cookie2 = new Cookie("email", email);
 
-        Map<String, String> map = new HashMap<>();
+        ResponseCookie cookie3 = ResponseCookie.from("email", email)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true) // sameSite를 None으로 지정했다면 필수
+                .build();
+
+        response.addHeader("Set-Cookie", cookie3.toString());
+//
+//        response.addCookie(cookie);
+//        response.addCookie(cookie2);
         // STEP5: 강제 로그인
         // 세션에 회원 정보 저장 & 세션 유지 시간 설정
         if (kakaoMember == null) {
