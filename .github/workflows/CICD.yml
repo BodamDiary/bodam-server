@@ -42,25 +42,25 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: |
             DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-            spring.datasource.db1.prod.jdbc-url=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL }}
-            spring.datasource.db2.prod.jdbc-url=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL }}
-            kakao.client.id=${{ secrets.APPLICATION_KAKAO_CLIENT_ID }}
-            kakao.redirect.prod.redirect.uri=${{ secrets.APPLICATION_KAKAO_PROD_REDIRECT_URI }}
-            spring.datasource.db1.username=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_USERNAME }}
-            spring.datasource.db1.password=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD }}
-            spring.datasource.db2.username=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_USERNAME }}
-            spring.datasource.db2.password=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD }}
+            DB1_JDBC_URL=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL }}
+            DB2_JDBC_URL=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL }}
+            KAKAO_CLIENT_ID=${{ secrets.APPLICATION_KAKAO_CLIENT_ID }}
+            KAKAO_REDIRECT_URI=${{ secrets.APPLICATION_KAKAO_PROD_REDIRECT_URI }}
+            DB1_USERNAME=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_USERNAME }}
+            DB1_PASSWORD=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD }}
+            DB2_USERNAME=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_USERNAME }}
+            DB2_PASSWORD=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD }}
           script_stop: true
           script: |
             echo "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}" > .env
-            echo "spring.datasource.db1.prod.jdbc-url=${spring.datasource.db1.prod.jdbc-url}" >> .env
-            echo "spring.datasource.db2.prod.jdbc-url=${spring.datasource.db2.prod.jdbc-url}" >> .env
-            echo "kakao.client.id=${kakao.client.id}" >> .env
-            echo "kakao.redirect.prod.redirect.uri=${kakao.redirect.prod.redirect.uri}" >> .env
-            echo "spring.datasource.db1.username=${spring.datasource.db1.username}" >> .env
-            echo "spring.datasource.db1.password=${spring.datasource.db1.password}" >> .env
-            echo "spring.datasource.db2.username=${spring.datasource.db2.username}" >> .env
-            echo "spring.datasource.db2.password=${spring.datasource.db2.password}" >> .env
+            echo "spring.datasource.db1.prod.jdbc-url=${DB1_JDBC_URL}" >> .env
+            echo "spring.datasource.db2.prod.jdbc-url=${DB2_JDBC_URL}" >> .env
+            echo "kakao.client.id=${KAKAO_CLIENT_ID}" >> .env
+            echo "kakao.redirect.prod.redirect.uri=${KAKAO_REDIRECT_URI}" >> .env
+            echo "spring.datasource.db1.username=${DB1_USERNAME}" >> .env
+            echo "spring.datasource.db1.password=${DB1_PASSWORD}" >> .env
+            echo "spring.datasource.db2.username=${DB2_USERNAME}" >> .env
+            echo "spring.datasource.db2.password=${DB2_PASSWORD}" >> .env
             sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
             if [ "$(sudo docker ps -q -f name=prod)" ]; then
                 sudo docker stop prod
