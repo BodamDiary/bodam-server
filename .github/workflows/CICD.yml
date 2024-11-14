@@ -40,12 +40,30 @@ jobs:
           username: ubuntu
           host: ${{ secrets.LIVE_SERVER_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: |
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            spring.datasource.db1.prod.jdbc-url=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL }}
+            spring.datasource.db2.prod.jdbc-url=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL }}
+            kakao.client.id=${{ secrets.APPLICATION_KAKAO_CLIENT_ID }}
+            kakao.redirect.prod.redirect.uri=${{ secrets.APPLICATION_KAKAO_PROD_REDIRECT_URI }}
+            spring.datasource.db1.username=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_USERNAME }}
+            spring.datasource.db1.password=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD }}
+            spring.datasource.db2.username=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_USERNAME }}
+            spring.datasource.db2.password=${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD }}
           script_stop: true
           script: |
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
-            if [ "$(sudo docker ps -q -f name=prod_server)" ]; then
-                sudo docker stop prod_server
-                sudo docker rm prod_server
+            echo "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}" > .env
+            echo "spring.datasource.db1.prod.jdbc-url=${spring.datasource.db1.prod.jdbc-url}" >> .env
+            echo "spring.datasource.db2.prod.jdbc-url=${spring.datasource.db2.prod.jdbc-url}" >> .env
+            echo "kakao.client.id=${kakao.client.id}" >> .env
+            echo "kakao.redirect.prod.redirect.uri=${kakao.redirect.prod.redirect.uri}" >> .env
+            echo "spring.datasource.db1.username=${spring.datasource.db1.username}" >> .env
+            echo "spring.datasource.db1.password=${spring.datasource.db1.password}" >> .env
+            echo "spring.datasource.db2.username=${spring.datasource.db2.username}" >> .env
+            echo "spring.datasource.db2.password=${spring.datasource.db2.password}" >> .env
+            sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
+            if [ "$(sudo docker ps -q -f name=prod)" ]; then
+                sudo docker stop prod
+                sudo docker rm prod
             fi
-            cd /home/ubuntu
             sudo docker-compose -f docker-compose-prod.yml up -d
