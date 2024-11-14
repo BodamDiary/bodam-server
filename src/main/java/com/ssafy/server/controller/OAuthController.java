@@ -35,8 +35,13 @@ public class OAuthController {
     @Value("${kakao.redirect.uri}")
     String redirectUri;
 
+
     @Autowired
     JwtTokenProvider jwtTokenProvider;
+
+    @Value("${server.address}")
+    private String serverAddress;
+
 
     /**
      * 카카오 로그인 요청
@@ -107,7 +112,8 @@ public class OAuthController {
         if (kakaoMember == null) {
             System.out.println("redirect to kakao register");
 
-            return "redirect:http://localhost:3000/kakao-signup";
+            return "redirect:http://" + ("localhost".equals(serverAddress) ? "localhost:8080" : serverAddress)  +"/kakao-signup?email=" + kakaoInfo.getEmail();
+
         }
 
         return "redirect:http://localhost:3000";
