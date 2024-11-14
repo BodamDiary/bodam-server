@@ -2,6 +2,9 @@ package com.ssafy.server.controller;
 
 import com.ssafy.server.model.dto.User;
 import com.ssafy.server.model.service.UserService;
+import com.ssafy.server.util.JwtTokenProvider;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +29,39 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/regist-user")
-    public ResponseEntity<String> registUser(@RequestBody User user){
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
-        int successUser = userService.registUser(user);
-        if (successUser > 0) {
-            return ResponseEntity.ok("Regist user successfully");
+    @PostMapping("/regist-user")
+    public ResponseEntity<String> registUser(@RequestBody User user, HttpServletRequest request){
+
+        Cookie[] cookies = request.getCookies();
+
+        String email = null;
+        String token = null;
+
+        for (Cookie cookie : cookies) {
+            if ("email".equals(cookie.getName())) {
+                email = cookie.getValue();
+            }
+            if ("token".equals(cookie.getName())) {
+                token = cookie.getValue();
+            }
         }
-        return ResponseEntity.badRequest().body("Regist user failed");
+
+        boolean isValid = jwtTokenProvider.validToken(token);
+
+        if (isValid) {
+            String tokenEmail = jwtTokenProvider.getEmailFromToken(token);
+            if (email != null && email.equals(tokenEmail)) {
+                int successUser = userService.registUser(user);
+                if (successUser > 0) {
+                    return ResponseEntity.ok("Regist user successfully");
+                }
+                return ResponseEntity.badRequest().body("Regist user failed");
+            }
+        }
+        return ResponseEntity.badRequest().body("token expired");
     }
 
 
