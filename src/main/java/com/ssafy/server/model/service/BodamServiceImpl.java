@@ -18,4 +18,11 @@ public class BodamServiceImpl implements BodamService{
 
         return isRegistered;
     }
+
+    @Override
+    public Bodam getBodamByUser(int userId) {
+        Bodam bodam = bodamMapper.getBodamByUser(userId);
+
+        return bodam;
+    }
 }
