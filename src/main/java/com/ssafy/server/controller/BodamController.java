@@ -24,4 +24,15 @@ public class BodamController {
         return ResponseEntity.badRequest().body("Bodam register failed");
     }
 
+    @GetMapping("/get-bodam/{userId}")
+    public ResponseEntity<Bodam> getBodam(@PathVariable int userId) {
+        Bodam bodam = bodamService.getBodamByUser(userId);
+        System.out.println(bodam);
+
+        if (bodam != null) {
+            return ResponseEntity.ok().body(bodam);
+        }
+
+        return ResponseEntity.notFound().build();
+    }
 }

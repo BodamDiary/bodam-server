@@ -65,12 +65,17 @@ public class UserController {
     }
 
 
-    @GetMapping("/get-user")
-    public ResponseEntity<User> getUser(@RequestParam int userId){
+    @GetMapping("/get-user/{userId}")
+    public ResponseEntity<User> getUser(@PathVariable int userId){
+
         User user = userService.getUser(userId);
+        System.out.println(user);
+
         if (user != null) {
-            return ResponseEntity.ok(user);
+
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         }
+
         return ResponseEntity.badRequest().build();
     }
 

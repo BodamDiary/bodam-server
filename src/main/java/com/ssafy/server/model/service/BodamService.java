@@ -5,4 +5,6 @@ import com.ssafy.server.model.dto.Bodam;
 public interface BodamService {
 
     int registBodam(Bodam bodam);
+
+    Bodam getBodamByUser(int userId);
 }
