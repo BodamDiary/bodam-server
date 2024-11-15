@@ -14,16 +14,26 @@ public class DataSourceConfig {
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.db1")
     public DataSource DB1DataSource(){
-        return DataSourceBuilder.create()
-                .type(HikariDataSource.class)
-                .build();
+        return new HikariDataSource();
     }
 
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource.db2")
     public DataSource DB2DataSource(){
-        return DataSourceBuilder.create()
-                .type(HikariDataSource.class)
-                .build();
+        return new HikariDataSource();
     }
+
+//    @Bean
+//    @ConfigurationProperties(prefix = "spring.datasource.db1")
+//    public DataSource DB1DataSource(){
+//        return DataSourceBuilder.create()
+//                .build();
+//    }
+//
+//    @Bean
+//    @ConfigurationProperties(prefix = "spring.datasource.db2")
+//    public DataSource DB2DataSource(){
+//        return DataSourceBuilder.create()
+//                .build();
+//    }
 }
