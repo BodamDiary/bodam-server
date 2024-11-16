@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 jobs:
-  build:
+  build-and-deploy:    # 하나의 job으로 통합
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,22 +20,19 @@ jobs:
         run: |
           chmod 777 ./mvnw
           ./mvnw clean package -DskipTests
+
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build Docker
-        run: docker build --platform linux/amd64 --build-arg PROFILES=prod --build-arg ENV=prod -t ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest .
 
-      - name: Push Docker
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
+      - name: Build and Push Docker
+        run: |
+          docker build --platform linux/amd64 --build-arg PROFILES=prod --build-arg ENV=prod -t ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Docker compose
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -54,9 +51,9 @@ jobs:
           host: ${{ secrets.LIVE_SERVER_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: DOCKERHUB_USERNAME,APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL,APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL,APPLICATION_KAKAO_CLIENT_ID,APPLICATION_KAKAO_PROD_REDIRECT_URI,APPLICATION_SPRING_DATASOURCE_DB1_USERNAME,APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD,APPLICATION_SPRING_DATASOURCE_DB2_USERNAME,APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD
-
           script_stop: true
           script: |
+            cd ~/backend/web/bodam-server || exit
             echo "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}" > .env
             echo "APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME=${APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME}" >> .env
             echo "APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME=${APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME}" >> .env
@@ -69,14 +66,11 @@ jobs:
             echo "APPLICATION_SPRING_DATASOURCE_DB2_USERNAME=${APPLICATION_SPRING_DATASOURCE_DB2_USERNAME}" >> .env
             echo "APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD=${APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD}" >> .env
             
-            
             sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
-            
             
             if [ "$(sudo docker ps -q -f name=prod)" ]; then
                 sudo docker stop prod
                 sudo docker rm prod
             fi
             
-            
-            sudo docker-compose -f docker-compose-prod.yml up -d
+            sudo docker-compose -f docker-compose.yml up -d
