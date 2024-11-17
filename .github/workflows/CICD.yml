@@ -72,6 +72,18 @@ jobs:
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME: ${{secrets.APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME}}
+          APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME: ${{secrets.APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME}}
+          APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL }}
+          APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL }}
+          APPLICATION_KAKAO_CLIENT_ID: ${{ secrets.APPLICATION_KAKAO_CLIENT_ID }}
+          APPLICATION_KAKAO_PROD_REDIRECT_URI: ${{ secrets.APPLICATION_KAKAO_PROD_REDIRECT_URI }}
+          APPLICATION_SPRING_DATASOURCE_DB1_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_USERNAME }}
+          APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD }}
+          APPLICATION_SPRING_DATASOURCE_DB2_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_USERNAME }}
+          APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD }}
         with:
           username: ubuntu
           host: ${{ secrets.LIVE_SERVER_IP }}
@@ -102,9 +114,9 @@ jobs:
             
             sudo docker-compose -f docker-compose.yml -p live_server up -d
             
-            if sudo docker-compose -f docker-compose.yml up -d; then
+            if [ $? -eq 0 ]; then
               echo "Docker Compose 실행 성공"
             else
-              echo "Docker Compose 실행 실패"
-              exit 1
+            echo "Docker Compose 실행 실패"
+            exit 1
             fi
