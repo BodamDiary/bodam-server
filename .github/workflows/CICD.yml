@@ -41,7 +41,7 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME: ${{secrets.APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME}}
-          APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME: ${{secrets.APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME}}
+          APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME: ${{secrets.APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME}}
           APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL }}
           APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL }}
           APPLICATION_KAKAO_CLIENT_ID: ${{ secrets.APPLICATION_KAKAO_CLIENT_ID }}
@@ -51,12 +51,21 @@ jobs:
           APPLICATION_SPRING_DATASOURCE_DB2_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_USERNAME }}
           APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD }}
         run: |
-          docker-compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod
+          docker-compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod \
+            --build-arg APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME=${APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME} \
+            --build-arg APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME=${APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME} \
+            --build-arg APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL=${APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL} \
+            --build-arg APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL=${APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL} \
+            --build-arg APPLICATION_KAKAO_CLIENT_ID=${APPLICATION_KAKAO_CLIENT_ID} \
+            --build-arg APPLICATION_KAKAO_PROD_REDIRECT_URI=${APPLICATION_KAKAO_PROD_REDIRECT_URI} \
+            --build-arg APPLICATION_SPRING_DATASOURCE_DB1_USERNAME=${APPLICATION_SPRING_DATASOURCE_DB1_USERNAME} \
+            --build-arg APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD=${APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD} \
+            --build-arg APPLICATION_SPRING_DATASOURCE_DB2_USERNAME=${APPLICATION_SPRING_DATASOURCE_DB2_USERNAME} \
+            --build-arg APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD=${APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
-
         with:
           username: ubuntu
           host: ${{ secrets.LIVE_SERVER_IP }}
@@ -87,11 +96,9 @@ jobs:
             
             sudo docker-compose -f docker-compose.yml up -d
             
-          
             if sudo docker-compose -f docker-compose.yml up -d; then
               echo "Docker Compose 실행 성공"
             else
-            echo "Docker Compose 실행 실패"
-            exit 1
+              echo "Docker Compose 실행 실패"
+              exit 1
             fi
-            
