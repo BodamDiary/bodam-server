@@ -1,21 +1,25 @@
-name: CICD
+name: CI/CD using github action & docker
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
 permissions:
   contents: read
+
 jobs:
-  build-and-deploy:    # 하나의 job으로 통합
+  CI-CD:
     runs-on: ubuntu-latest
     steps:
+      # JDK setting - github actions에서 사용할 JDK 설정
       - uses: actions/checkout@v3
       - name: Install JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+
       - name: Build with Maven
         run: |
           chmod 777 ./mvnw
@@ -29,7 +33,7 @@ jobs:
 
       - name: Build and Push Docker
         run: |
-          docker build --platform linux/amd64 --build-arg PROFILES=prod --build-arg ENV=prod -t ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest .
+          docker-compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
 
       - name: Deploy to EC2
@@ -75,3 +79,12 @@ jobs:
             fi
             
             sudo docker-compose -f docker-compose.yml up -d
+            
+          
+            if sudo docker-compose -f docker-compose.yml up -d; then
+              echo "Docker Compose 실행 성공"
+            else
+            echo "Docker Compose 실행 실패"
+            exit 1
+            fi
+            
