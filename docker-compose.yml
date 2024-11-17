@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfile
       args:
         ENV: prod
-    container_name: prod
     image: ${DOCKERHUB_USERNAME:-daheepk}/live_server:latest
     ports:
       - "8080:8080"
