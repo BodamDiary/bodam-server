@@ -63,6 +63,8 @@ jobs:
           echo "APPLICATION_SPRING_DATASOURCE_DB2_USERNAME=${APPLICATION_SPRING_DATASOURCE_DB2_USERNAME}" >> .env
           echo "APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD=${APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD}" >> .env
           
+          cat .env
+          
           # Build the Docker image
           docker-compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
