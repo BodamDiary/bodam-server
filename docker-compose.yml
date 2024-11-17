@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PROFILES: prod
+        ENV: prod
     container_name: prod
     ports:
       - "8080:8080"
