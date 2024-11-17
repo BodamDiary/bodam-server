@@ -119,14 +119,20 @@ jobs:
               sudo docker system prune -f
 
               echo "Starting new container with Docker Compose"
-              sudo docker-compose -f docker-compose.yml -p live_server down --remove-orphans
-              sudo docker-compose -f docker-compose.yml -p live_server up -d
-
-              if [ $? -eq 0 ]; then
+              if sudo docker-compose -f docker-compose.yml -p live_server up -d; then
                 echo "Docker Compose 실행 성공"
-                sudo docker ps  # 실행 중인 컨테이너 목록 확인
+                sleep 20  # 애플리케이션이 완전히 시작될 때까지 대기
+                
+                if sudo docker logs prod | grep -q "Started BodamServerApplication"; then
+                echo "애플리케이션이 성공적으로 시작되었습니다."
+                else
+                echo "애플리케이션 시작 실패. 로그를 확인하세요:"
+                sudo docker logs prod
+                exit 1
+                fi
               else
                 echo "Docker Compose 실행 실패"
                 sudo docker-compose -f docker-compose.yml logs
                 exit 1
               fi
+                        

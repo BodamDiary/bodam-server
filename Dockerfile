@@ -1,7 +1,9 @@
 FROM amazoncorretto:17-alpine-jdk
 ARG JAR_FILE=target/*.jar
-ARG PROFILES
-ARG ENV
 COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java", "-Dspring.profiles.active=${PROFILES}","-Dserver.env=${ENV}", "-jar", "app.jar"]
-#ENTRYPOINT ["java", "-jar", "app.jar"]
+
+# 기본값 설정
+ENV SPRING_PROFILES_ACTIVE=prod
+ENV SERVER_ENV=prod
+
+ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-Dserver.env=${SERVER_ENV}", "-jar", "app.jar"]
