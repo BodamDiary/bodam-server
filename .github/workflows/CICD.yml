@@ -54,6 +54,7 @@ jobs:
           script_stop: true
           script: |
             cd ~/backend/web/bodam-server || exit
+            git pull
             echo "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}" > .env
             echo "APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME=${APPLICATION_SPRING_DATASOURCE_DB1_DRIVERCLASSNAME}" >> .env
             echo "APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME=${APPLICATION_SPRING_DATASOURCE_DB2_DRIVERCLASSNAME}" >> .env
