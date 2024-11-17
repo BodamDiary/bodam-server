@@ -105,24 +105,28 @@ jobs:
             echo "APPLICATION_SPRING_DATASOURCE_DB2_USERNAME=${APPLICATION_SPRING_DATASOURCE_DB2_USERNAME}" >> .env
             echo "APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD=${APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD}" >> .env
             
-            sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
-            
-            # 기존 컨테이너 확인 및 제거
-            if [ "$(sudo docker ps -q -f name=prod)" ]; then
-                sudo docker stop prod
-                sudo docker rm prod
-            fi
-            
-            # 기존 네트워크 제거
-            if [ "$(sudo docker network ls -q -f name=live_server_default)" ]; then
-            sudo docker network rm live_server_default
-            fi
-            
-            sudo docker-compose -f docker-compose.yml -p live_server up -d
-            
-            if [ $? -eq 0 ]; then
-              echo "Docker Compose 실행 성공"
-            else
-            echo "Docker Compose 실행 실패"
-            exit 1
-            fi
+            echo "Pulling latest Docker image"
+              sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
+
+              echo "Stopping and removing existing container"
+              sudo docker stop prod || true
+              sudo docker rm prod || true
+
+              echo "Removing existing network"
+              sudo docker network rm live_server_default || true
+
+              echo "Pruning unused Docker objects"
+              sudo docker system prune -f
+
+              echo "Starting new container with Docker Compose"
+              sudo docker-compose -f docker-compose.yml -p live_server down --remove-orphans
+              sudo docker-compose -f docker-compose.yml -p live_server up -d
+
+              if [ $? -eq 0 ]; then
+                echo "Docker Compose 실행 성공"
+                sudo docker ps  # 실행 중인 컨테이너 목록 확인
+              else
+                echo "Docker Compose 실행 실패"
+                sudo docker-compose -f docker-compose.yml logs
+                exit 1
+              fi

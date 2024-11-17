@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   live_server:
+    container_name: prod
     build:
       context: .
       dockerfile: Dockerfile
