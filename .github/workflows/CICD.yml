@@ -66,7 +66,7 @@ jobs:
           cat .env
           
           # Build the Docker image
-          docker-compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod
+          docker-compose -f docker-compose.yml live_server build --build-arg PROFILES=prod --build-arg ENV=prod
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
   
 
@@ -100,7 +100,7 @@ jobs:
                 sudo docker rm prod
             fi
             
-            sudo docker-compose -f docker-compose.yml up -d
+            sudo docker-compose -f docker-compose.yml -p live_server up -d
             
             if sudo docker-compose -f docker-compose.yml up -d; then
               echo "Docker Compose 실행 성공"
