@@ -107,9 +107,15 @@ jobs:
             
             sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
             
+            # 기존 컨테이너 확인 및 제거
             if [ "$(sudo docker ps -q -f name=prod)" ]; then
                 sudo docker stop prod
                 sudo docker rm prod
+            fi
+            
+            # 기존 네트워크 제거
+            if [ "$(sudo docker network ls -q -f name=live_server_default)" ]; then
+            sudo docker network rm live_server_default
             fi
             
             sudo docker-compose -f docker-compose.yml -p live_server up -d
