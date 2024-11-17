@@ -66,8 +66,8 @@ jobs:
           cat .env
           
           # Build the Docker image
-          docker-compose -f docker-compose.yml build live_server --build-arg PROFILES=prod --build-arg ENV=prod
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
+          docker-compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod
+          docker push ${DOCKERHUB_USERNAME}/live_server:latest
   
 
       - name: Deploy to EC2
