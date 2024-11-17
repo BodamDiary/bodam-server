@@ -8,6 +8,7 @@ services:
       args:
         ENV: prod
     container_name: prod
+    image: daheepk/live_server:latest
     ports:
       - "8080:8080"
     environment:
