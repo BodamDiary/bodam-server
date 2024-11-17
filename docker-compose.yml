@@ -6,13 +6,11 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        PROFILES: prod
         ENV: prod
     container_name: prod
     ports:
       - "8080:8080"
     environment:
-      PROFILES: prod
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_DB1_JDBC_URL: ${APPLICATION_SPRING_DATASOURCE_DB1_JDBC_URL}
       SPRING_DATASOURCE_DB2_JDBC_URL: ${APPLICATION_SPRING_DATASOURCE_DB2_JDBC_URL}
