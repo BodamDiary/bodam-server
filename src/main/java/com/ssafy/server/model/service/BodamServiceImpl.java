@@ -21,7 +21,7 @@ public class BodamServiceImpl implements BodamService{
 
     @Override
     public Bodam getBodamByUser(int userId) {
-        Bodam bodam = bodamMapper.getBodamByUser(userId);
+        Bodam bodam = bodamMapper.selectBodamByUser(userId);
 
         return bodam;
     }

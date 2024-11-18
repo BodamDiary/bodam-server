@@ -7,7 +7,7 @@
         INSERT INTO bodams
     </insert>
 
-    <select id="getBodamByUser" parameterType="int" resultType="Bodam">
+    <select id="selectBodamByUser" parameterType="int" resultType="Bodam">
         SELECT *
         FROM bodams
         WHERE user_id=#{userId}
