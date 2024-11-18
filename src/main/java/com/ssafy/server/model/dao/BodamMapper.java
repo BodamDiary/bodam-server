@@ -8,4 +8,5 @@ public interface BodamMapper {
 
     int insertBodam(Bodam bodam);
 
+    Bodam selectBodamByUser(int userId);
 }

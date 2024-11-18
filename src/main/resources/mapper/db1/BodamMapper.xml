@@ -6,4 +6,10 @@
     <insert id="insertBodam" parameterType="Bodam">
         INSERT INTO bodams
     </insert>
+
+    <select id="selectBodamByUser" parameterType="int" resultType="Bodam">
+        SELECT *
+        FROM bodams
+        WHERE user_id=#{userId}
+    </select>
 </mapper>
