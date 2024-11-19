@@ -8,7 +8,7 @@ services:
         ENV: prod
     image: ${DOCKERHUB_USERNAME:-daheepk}/live_server:latest
     ports:
-      - "8080:8080"
+      - "443:443"  # 443 포트로 수정
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SERVER_ENV: prod
