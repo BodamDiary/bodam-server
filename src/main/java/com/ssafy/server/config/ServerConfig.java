@@ -14,7 +14,8 @@ public class ServerConfig {
 
     @Bean
     public ServletWebServerFactory servletContainer() {
-        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
+
+        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory(){
             @Override
             protected void postProcessContext(Context context) {
                 SecurityConstraint securityConstraint = new SecurityConstraint();
@@ -25,15 +26,15 @@ public class ServerConfig {
                 context.addConstraint(securityConstraint);
             }
         };
-        tomcat.addAdditionalTomcatConnectors(redirectConnector());
+        tomcat.addAdditionalTomcatConnectors(createSslConnector());
         return tomcat;
     }
 
-    private Connector redirectConnector() {
+    private Connector createSslConnector() {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
         connector.setScheme("http");
+        connector.setSecure(false);
         connector.setPort(80);
-        connector.setSecure(true);
         connector.setRedirectPort(443);
         return connector;
     }
