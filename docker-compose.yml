@@ -8,7 +8,7 @@ services:
         ENV: prod
     image: ${DOCKERHUB_USERNAME:-daheepk}/live_server:latest
     ports:
-      - "80":"80"
+      - "80:80"
       - "443:443"
 
     environment:
