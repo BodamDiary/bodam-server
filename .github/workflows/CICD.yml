@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Install JDK 17
         uses: actions/setup-java@v3
         with:
@@ -45,7 +46,7 @@ jobs:
       - name: Build and Push Docker
         run: |
           # Build without environment variables
-          docker-compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod
+          docker compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod
           docker push ${DOCKERHUB_USERNAME}/live_server:latest
 
       - name: Deploy to EC2
@@ -65,10 +66,9 @@ jobs:
             sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
             sudo docker stop prod || true
             sudo docker rm prod || true
-            sudo docker network rm live_server_default || true
-            sudo docker system prune -f
+            
 
-            if sudo docker-compose -f docker-compose.yml -p live_server up -d --env-file .env; then
+            if sudo docker compose -f docker-compose.yml -p live_server up -d --env-file .env; then
               sleep 20
               if sudo docker logs prod | grep -q "Started BodamServerApplication"; then
                 echo "Application started successfully"
@@ -79,6 +79,6 @@ jobs:
               fi
             else
               echo "Docker Compose failed"
-              sudo docker-compose -f docker-compose.yml logs
+              sudo docker compose -f docker-compose.yml logs
               exit 1
             fi
