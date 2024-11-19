@@ -141,4 +141,8 @@ public class OAuthService {
         Long id = jsonNode.get("id").asLong();
         System.out.println("반환된 id: "+id);
     }
+
+    public int registUser(User user) {
+        return 0;
+    }
 }

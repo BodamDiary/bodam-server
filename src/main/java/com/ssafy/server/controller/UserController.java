@@ -33,35 +33,18 @@ public class UserController {
     JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/regist-user")
-    public ResponseEntity<String> registUser(@RequestBody User user, HttpServletRequest request){
+    public ResponseEntity<String> registUser(@RequestBody User user, HttpServletResponse response){
 
-        Cookie[] cookies = request.getCookies();
+        int successUser = userService.registUser(user);
+        if (successUser > 0) {
+            Cookie cookie = new Cookie("email", user.getEmail());
+            response.addCookie(cookie);
 
-        String email = null;
-        String token = null;
-
-        for (Cookie cookie : cookies) {
-            if ("email".equals(cookie.getName())) {
-                email = cookie.getValue();
-            }
-            if ("token".equals(cookie.getName())) {
-                token = cookie.getValue();
-            }
+            return ResponseEntity.ok("Regist user successfully");
         }
 
-        boolean isValid = jwtTokenProvider.validToken(token);
+        return ResponseEntity.badRequest().body("Regist user failed");
 
-        if (isValid) {
-            String tokenEmail = jwtTokenProvider.getEmailFromToken(token);
-            if (email != null && email.equals(tokenEmail)) {
-                int successUser = userService.registUser(user);
-                if (successUser > 0) {
-                    return ResponseEntity.ok("Regist user successfully");
-                }
-                return ResponseEntity.badRequest().body("Regist user failed");
-            }
-        }
-        return ResponseEntity.badRequest().body("token expired");
     }
 
 
