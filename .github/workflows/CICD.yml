@@ -51,26 +51,32 @@ jobs:
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL }}
+          APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL }}
+          APPLICATION_KAKAO_CLIENT_ID: ${{ secrets.APPLICATION_KAKAO_CLIENT_ID }}
+          APPLICATION_KAKAO_PROD_REDIRECT_URI: ${{ secrets.APPLICATION_KAKAO_PROD_REDIRECT_URI }}
+          APPLICATION_SPRING_DATASOURCE_DB1_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_USERNAME }}
+          APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD }}
+          APPLICATION_SPRING_DATASOURCE_DB2_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_USERNAME }}
+          APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD }}
+          SSL_KEY_STORE_PASSWORD: ${{secrets.SSL_KEY_STORE_PASSWORD}}
         with:
           username: ubuntu
           host: ${{ secrets.LIVE_SERVER_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: DOCKERHUB_USERNAME,APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL,APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL,APPLICATION_KAKAO_CLIENT_ID,APPLICATION_KAKAO_PROD_REDIRECT_URI,APPLICATION_SPRING_DATASOURCE_DB1_USERNAME,APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD,APPLICATION_SPRING_DATASOURCE_DB2_USERNAME,APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD,SSL_KEY_STORE_PASSWORD
           script: |
             cd ~/backend/web/bodam-server || exit
             git pull
-            
-            # Create env file with filtered environment variables
-            # 환경변수를 export로 설정
-            printenv | grep -E '^(APPLICATION_|DOCKERHUB_|SSL_)' | while read -r line; do
-              export "$line"
-            done
             
             # Update container
             sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
             sudo docker stop prod || true
             sudo docker rm prod || true
             
-            # env-file 플래그 없이 실행
+            # 환경변수를 export로 설정하는 부분은 이제 필요 없음 (SSH action이 처리)
             if sudo -E docker compose -f docker-compose.yml -p live_server up -d; then
               sleep 20
               if sudo docker logs prod | grep -q "Started BodamServerApplication"; then
