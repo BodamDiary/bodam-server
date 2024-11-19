@@ -6,6 +6,7 @@ import com.ssafy.server.model.dto.User;
 import com.ssafy.server.model.service.OAuthService;
 import com.ssafy.server.util.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -136,5 +134,37 @@ public class OAuthController {
         System.out.println("카카오 로그아웃");
 
         return "redirect:/";
+    }
+
+    @PostMapping("/kakao-regist-user")
+    public ResponseEntity<String> kakaoRegistUser(@RequestBody User user, HttpServletRequest request){
+
+        Cookie[] cookies = request.getCookies();
+
+        String email = null;
+        String token = null;
+
+        for (Cookie cookie : cookies) {
+            if ("email".equals(cookie.getName())) {
+                email = cookie.getValue();
+            }
+            if ("token".equals(cookie.getName())) {
+                token = cookie.getValue();
+            }
+        }
+
+        boolean isValid = jwtTokenProvider.validToken(token);
+
+        if (isValid) {
+            String tokenEmail = jwtTokenProvider.getEmailFromToken(token);
+            if (email != null && email.equals(tokenEmail)) {
+                int successUser = oAuthService.registUser(user);
+                if (successUser > 0) {
+                    return ResponseEntity.ok("Regist user successfully");
+                }
+                return ResponseEntity.badRequest().body("Regist user failed");
+            }
+        }
+        return ResponseEntity.badRequest().body("token expired");
     }
 }
