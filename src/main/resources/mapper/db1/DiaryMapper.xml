@@ -19,4 +19,10 @@
         DELETE FROM diary_posts
         WHERE diary_id = #{diary_id}
     </delete>
+
+    <insert id="insertDiary" parameterType="Diary" useGeneratedKeys="true" keyProperty="diaryId">
+        INSERT INTO diary_posts
+        (title, body, study_content, user_id)
+        VALUE (#{title}, #{body}, #{studyContent}, #{userId})
+    </insert>
 </mapper>

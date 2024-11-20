@@ -85,10 +85,18 @@ public class UserController {
     }
 
     @PostMapping("/login-user")
-    public ResponseEntity<?> loginUser(@RequestBody User user) {
+    public ResponseEntity<?> loginUser(@RequestBody User user, HttpServletResponse response) {
         User loginUser = userService.loginUser(user.getEmail(), user.getPassword());
 
+
         if (loginUser != null) {
+            String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId());
+            Cookie c = new Cookie("uToken", uToken);
+            c.setDomain("localhost");
+            c.setPath("/");
+            c.setMaxAge(300);
+
+            response.addCookie(c);
             return ResponseEntity.status(HttpStatus.OK).body(loginUser);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("유저가 없습니다.");

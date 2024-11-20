@@ -2,6 +2,10 @@ package com.ssafy.server.controller;
 
 import com.ssafy.server.model.dto.Bodam;
 import com.ssafy.server.model.service.BodamService;
+import com.ssafy.server.util.JwtTokenProvider;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,8 +17,29 @@ public class BodamController {
     @Autowired
     BodamService bodamService;
 
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
+
     @PostMapping("/regist-bodam")
-    public ResponseEntity<String> registBodam(@RequestBody Bodam bodam) {
+    public ResponseEntity<String> registBodam(@RequestBody Bodam bodam, HttpServletRequest request, HttpServletResponse response) {
+        String uToken = null;
+
+        for (Cookie c : request.getCookies()) {
+            if (c.getName().equals("uToken")) {
+                uToken = c.getValue();
+                break;
+            }
+        }
+
+        if (uToken == null) {
+            return ResponseEntity.badRequest().body("Bodam register failed");
+        }
+
+        boolean isValid = jwtTokenProvider.validToken(uToken);
+        if (!isValid) {
+            return ResponseEntity.badRequest().body("Bodam register failed");
+        }
+
         int isRegistered = bodamService.registBodam(bodam);
 
         if (isRegistered > 0) {
@@ -34,5 +59,11 @@ public class BodamController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/update-bodam")
+    public ResponseEntity<String> updateBodam() {
+
+        return null;
     }
 }
