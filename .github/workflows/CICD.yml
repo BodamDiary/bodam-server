@@ -8,24 +8,6 @@ on:
 permissions:
   contents: read
 
-env:
-  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL }}
-  APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL }}
-  APPLICATION_KAKAO_CLIENT_ID: ${{ secrets.APPLICATION_KAKAO_CLIENT_ID }}
-  APPLICATION_KAKAO_PROD_REDIRECT_URI: ${{ secrets.APPLICATION_KAKAO_PROD_REDIRECT_URI }}
-  APPLICATION_SPRING_DATASOURCE_DB1_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_USERNAME }}
-  APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD }}
-  APPLICATION_SPRING_DATASOURCE_DB2_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_USERNAME }}
-  APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD }}
-  SSL_KEY_STORE_PASSWORD: ${{secrets.SSL_KEY_STORE_PASSWORD}}
-  APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY: ${{secrets.APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY}}
-  APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY: ${{secrets.APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY}}
-  APPLICATION_CLOUD_AWS_STACK_AUTO: ${{secrets.APPLICATION_CLOUD_AWS_STACK_AUTO}}
-  APPLICATION_CLOUD_AWS_S3_BUCKET: ${{secrets.APPLICATION_CLOUD_AWS_S3_BUCKET}}
-  APPLICATION_CLOUD_AWS_REGION_STATIC: ${{secrets.APPLICATION_CLOUD_AWS_REGION_STATIC}}
-  APPLICATION_CLOUD_AWS_S3_DOMAIN: ${{secrets.APPLICATION_CLOUD_AWS_S3_DOMAIN}}
-
 jobs:
   CI-CD:
     runs-on: ubuntu-latest
@@ -51,75 +33,49 @@ jobs:
 
       - name: Build and Push Docker
         run: |
-          # Build without environment variables
-          docker compose -f docker-compose.yml build --build-arg PROFILES=prod --build-arg ENV=prod
-          docker push ${DOCKERHUB_USERNAME}/live_server:latest
+          docker compose -f docker-compose.yml build 
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL }}
-          APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL }}
-          APPLICATION_KAKAO_CLIENT_ID: ${{ secrets.APPLICATION_KAKAO_CLIENT_ID }}
-          APPLICATION_KAKAO_PROD_REDIRECT_URI: ${{ secrets.APPLICATION_KAKAO_PROD_REDIRECT_URI }}
-          APPLICATION_SPRING_DATASOURCE_DB1_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_USERNAME }}
-          APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD }}
-          APPLICATION_SPRING_DATASOURCE_DB2_USERNAME: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_USERNAME }}
-          APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD: ${{ secrets.APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD }}
-          SSL_KEY_STORE_PASSWORD: ${{secrets.SSL_KEY_STORE_PASSWORD}}
-          APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY: ${{secrets.APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY}}
-          APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY: ${{secrets.APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY}}
-          APPLICATION_CLOUD_AWS_STACK_AUTO: ${{secrets.APPLICATION_CLOUD_AWS_STACK_AUTO}}
-          APPLICATION_CLOUD_AWS_S3_BUCKET: ${{secrets.APPLICATION_CLOUD_AWS_S3_BUCKET}}
-          APPLICATION_CLOUD_AWS_REGION_STATIC: ${{secrets.APPLICATION_CLOUD_AWS_REGION_STATIC}}
-          APPLICATION_CLOUD_AWS_S3_DOMAIN: ${{secrets.APPLICATION_CLOUD_AWS_S3_DOMAIN}}
+      - name: Copy .env file to EC2
+        uses: appleboy/scp-action@master
         with:
           username: ubuntu
           host: ${{ secrets.LIVE_SERVER_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: DOCKERHUB_USERNAME,APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL,APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL,APPLICATION_KAKAO_CLIENT_ID,APPLICATION_KAKAO_PROD_REDIRECT_URI,APPLICATION_SPRING_DATASOURCE_DB1_USERNAME,APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD,APPLICATION_SPRING_DATASOURCE_DB2_USERNAME,APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD,SSL_KEY_STORE_PASSWORD,APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY,APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY,APPLICATION_CLOUD_AWS_STACK_AUTO,APPLICATION_CLOUD_AWS_S3_BUCKET,APPLICATION_CLOUD_AWS_REGION_STATIC,APPLICATION_CLOUD_AWS_S3_DOMAIN
+          source: ".env"
+          target: "~/backend/web/bodam-server"
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          username: ubuntu
+          host: ${{ secrets.LIVE_SERVER_IP }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ~/backend/web/bodam-server || exit
-            git fetch origin
+            git fetch origin 
             git reset --hard origin/main
-
+            
             # 기존 컨테이너 정리
             sudo docker stop prod || true
             sudo docker rm prod || true
-            sudo docker rmi ${DOCKERHUB_USERNAME}/live_server:latest || true
-
-            # 새 이미지 pull
-            sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
-
-            # 환경변수 파일 생성
-            printenv | grep -E "APPLICATION_|SSL_|DOCKERHUB_" > .env
-          
-            # 환경변수 확인
-            echo "Checking environment variables:"
-            cat .env
-
-            # 환경변수 확인
-            echo "Checking AWS Environment Variables:"
-            echo "ACCESS_KEY exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY\" ]; then echo 'Yes'; else echo 'No'; fi)"
-            echo "SECRET_KEY exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY\" ]; then echo 'Yes'; else echo 'No'; fi)"
-            echo "BUCKET exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_S3_BUCKET\" ]; then echo 'Yes'; else echo 'No'; fi)"
-
-            # Docker Compose로 재시작 (env-file 사용)
+            sudo docker rmi ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest || true
+            
+            # 새 이미지 pull  
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
+            
+            # Docker Compose로 재시작 (env-file 사용)  
             if sudo docker compose --env-file .env -f docker-compose.yml -p live_server up -d; then
               sleep 20
-              if sudo docker logs prod | grep -q "Started BodamServerApplication"; then
+              if sudo docker logs prod | grep -q "Started BodamServerApplication"; then 
                 echo "Application started successfully"
-                rm .env  # 환경변수 파일 삭제
               else
                 echo "Application failed to start. Logs:"
                 sudo docker logs prod
-                rm .env  # 환경변수 파일 삭제
                 exit 1
               fi
-            else
+            else 
               echo "Docker Compose failed"
-              sudo docker compose -f docker-compose.yml logs
-              rm .env  # 환경변수 파일 삭제
+              sudo docker compose -f docker-compose.yml logs 
               exit 1
             fi
