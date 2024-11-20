@@ -92,7 +92,7 @@ public class UserController {
         if (loginUser != null) {
             String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId());
             Cookie c = new Cookie("uToken", uToken);
-            c.setDomain("bodam-client.vercel.app");
+            c.setDomain("vercel.app");
             c.setPath("/");
             c.setMaxAge(300);
 
