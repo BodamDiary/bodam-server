@@ -30,5 +30,10 @@ public class DiaryServiceImpl implements DiaryService {
         return diaryMapper.deleteDiary(diaryId) == 1;
     }
 
+    @Override
+    public boolean registDiary(Diary diary) {
+        return diaryMapper.insertDiary(diary);
+    }
+
 
 }

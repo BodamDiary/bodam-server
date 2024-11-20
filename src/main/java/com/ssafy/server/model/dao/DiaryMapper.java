@@ -12,4 +12,6 @@ public interface DiaryMapper {
     Diary selectDiary(int diaryId);
 
     int deleteDiary(int diaryId);
+
+    boolean insertDiary(Diary diary);
 }

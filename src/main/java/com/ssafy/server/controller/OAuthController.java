@@ -85,25 +85,13 @@ public class OAuthController {
         User kakaoMember = oAuthService.ifNeedKakaoInfo(kakaoInfo);
         String email = kakaoInfo.getEmail();
 
-//        String token = jwtTokenProvider.generateJwt(email);
-//        Cookie cookie = new Cookie("token", token);
-//        Cookie cookie2 = new Cookie("email", email);
-
-        ResponseCookie cookie3 = ResponseCookie.from("email", email)
-                .path("/")
-                .sameSite("None")
-                .httpOnly(true)
-                .secure(true) // sameSite를 None으로 지정했다면 필수
-                .build();
-
-        response.addHeader("Set-Cookie", cookie3.toString());
-//
-//        response.addCookie(cookie);
-//        response.addCookie(cookie2);
         // STEP5: 강제 로그인
         // 세션에 회원 정보 저장 & 세션 유지 시간 설정
         if (kakaoMember == null) {
             System.out.println("redirect to kakao register");
+            Cookie c = new Cookie("email", email);
+            c.setPath("/");
+            response.addCookie(c);
 
             return "redirect:http://localhost:3000/kakao-signup";
         }
@@ -141,12 +129,12 @@ public class OAuthController {
 
         Cookie[] cookies = request.getCookies();
 
-        String email = null;
+        int id = 0;
         String token = null;
 
         for (Cookie cookie : cookies) {
-            if ("email".equals(cookie.getName())) {
-                email = cookie.getValue();
+            if ("id".equals(cookie.getName())) {
+                id = Integer.parseInt(cookie.getValue());
             }
             if ("token".equals(cookie.getName())) {
                 token = cookie.getValue();
@@ -156,8 +144,8 @@ public class OAuthController {
         boolean isValid = jwtTokenProvider.validToken(token);
 
         if (isValid) {
-            String tokenEmail = jwtTokenProvider.getEmailFromToken(token);
-            if (email != null && email.equals(tokenEmail)) {
+            int tokenId = jwtTokenProvider.getIdFromToken(token);
+            if (id != 0 && id == tokenId) {
                 int successUser = oAuthService.registUser(user);
                 if (successUser > 0) {
                     return ResponseEntity.ok("Regist user successfully");

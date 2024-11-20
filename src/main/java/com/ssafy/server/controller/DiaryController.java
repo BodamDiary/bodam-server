@@ -2,6 +2,9 @@ package com.ssafy.server.controller;
 
 import com.ssafy.server.model.dto.Diary;
 import com.ssafy.server.model.service.DiaryService;
+import com.ssafy.server.util.JwtTokenProvider;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,9 @@ public class DiaryController {
 
     @Autowired
     DiaryService diaryService;
+
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/get-all-diaries")
     ResponseEntity<List<Diary>> getAllDiaries() {
@@ -56,5 +62,41 @@ public class DiaryController {
         }
 
         return ResponseEntity.badRequest().body("Diary Deletion Failed");
+    }
+
+    @PostMapping("/regist-diary")
+    ResponseEntity<Integer> registDiary(@RequestBody Diary diary, HttpServletRequest request) {
+        System.out.println("registDiary");
+
+        String uToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            System.out.println("no cookies");
+            return ResponseEntity.badRequest().build();
+        }
+        for (Cookie c: request.getCookies()) {
+            if ("uToken".equals(c.getName())) {
+                uToken = c.getValue();
+                break;
+            }
+        }
+
+        if (uToken == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!jwtTokenProvider.validToken(uToken)) {
+            return ResponseEntity.badRequest().build();
+        }
+        int userId = jwtTokenProvider.getIdFromToken(uToken);
+
+        diary.setUserId(userId);
+        boolean isRegistered = diaryService.registDiary(diary);
+        System.out.println(diary.getDiaryId());
+
+        if (isRegistered) {
+            return ResponseEntity.ok(diary.getDiaryId());
+        }
+
+        return ResponseEntity.badRequest().build();
     }
 }
