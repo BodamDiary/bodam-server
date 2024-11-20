@@ -92,30 +92,28 @@ jobs:
             # 새 이미지 pull
             sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
 
-            # 환경변수 파일 생성
-            printenv | grep -E "APPLICATION_|SSL_|DOCKERHUB_" > .env
-
-            # 환경변수 확인
-            echo "Checking AWS Environment Variables:"
+            # EC2에서의 환경변수 확인
+            echo "Checking AWS Environment Variables in EC2:"
             echo "ACCESS_KEY exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY\" ]; then echo 'Yes'; else echo 'No'; fi)"
             echo "SECRET_KEY exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY\" ]; then echo 'Yes'; else echo 'No'; fi)"
             echo "BUCKET exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_S3_BUCKET\" ]; then echo 'Yes'; else echo 'No'; fi)"
 
-            # Docker Compose로 재시작 (env-file 사용)
-            if sudo docker compose --env-file .env -f docker-compose.yml -p live_server up -d; then
+            if sudo docker compose -f docker-compose.yml -p live_server up -d; then
               sleep 20
+
+              # 컨테이너 내부의 환경변수 확인
+              echo "Checking environment variables inside container:"
+              sudo docker exec prod env | grep -E "CLOUD_AWS|SSL|APPLICATION"
+
               if sudo docker logs prod | grep -q "Started BodamServerApplication"; then
                 echo "Application started successfully"
-                rm .env  # 환경변수 파일 삭제
               else
                 echo "Application failed to start. Logs:"
                 sudo docker logs prod
-                rm .env  # 환경변수 파일 삭제
                 exit 1
               fi
             else
               echo "Docker Compose failed"
               sudo docker compose -f docker-compose.yml logs
-              rm .env  # 환경변수 파일 삭제
               exit 1
             fi
