@@ -81,35 +81,41 @@ jobs:
           envs: DOCKERHUB_USERNAME,APPLICATION_SPRING_DATASOURCE_DB1_PROD_JDBC_URL,APPLICATION_SPRING_DATASOURCE_DB2_PROD_JDBC_URL,APPLICATION_KAKAO_CLIENT_ID,APPLICATION_KAKAO_PROD_REDIRECT_URI,APPLICATION_SPRING_DATASOURCE_DB1_USERNAME,APPLICATION_SPRING_DATASOURCE_DB1_PASSWORD,APPLICATION_SPRING_DATASOURCE_DB2_USERNAME,APPLICATION_SPRING_DATASOURCE_DB2_PASSWORD,SSL_KEY_STORE_PASSWORD,APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY,APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY,APPLICATION_CLOUD_AWS_STACK_AUTO,APPLICATION_CLOUD_AWS_S3_BUCKET,APPLICATION_CLOUD_AWS_REGION_STATIC,APPLICATION_CLOUD_AWS_S3_DOMAIN
           script: |
             cd ~/backend/web/bodam-server || exit
-            git pull
-            
-            # Update container
-            sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
+            git fetch origin
+            git reset --hard origin/main
+
+            # 기존 컨테이너 정리
             sudo docker stop prod || true
             sudo docker rm prod || true
-            
-            # 환경변수 확인을 위한 echo 추가
+            sudo docker rmi ${DOCKERHUB_USERNAME}/live_server:latest || true
+
+            # 새 이미지 pull
+            sudo docker pull ${DOCKERHUB_USERNAME}/live_server:latest
+
+            # 환경변수 파일 생성
+            printenv | grep -E "APPLICATION_|SSL_|DOCKERHUB_" > .env
+
+            # 환경변수 확인
             echo "Checking AWS Environment Variables:"
             echo "ACCESS_KEY exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY\" ]; then echo 'Yes'; else echo 'No'; fi)"
             echo "SECRET_KEY exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY\" ]; then echo 'Yes'; else echo 'No'; fi)"
             echo "BUCKET exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_S3_BUCKET\" ]; then echo 'Yes'; else echo 'No'; fi)"
 
-            # Docker Compose 실행 전 환경변수 확인 추가
-            echo "Docker environment variables:"
-            sudo docker compose -f docker-compose.yml config | grep CLOUD_AWS
-            
-            # 환경변수를 export로 설정하는 부분은 이제 필요 없음 (SSH action이 처리)
-            if sudo --preserve-env docker compose -f docker-compose.yml -p live_server up -d; then
+            # Docker Compose로 재시작 (env-file 사용)
+            if sudo docker compose --env-file .env -f docker-compose.yml -p live_server up -d; then
               sleep 20
               if sudo docker logs prod | grep -q "Started BodamServerApplication"; then
                 echo "Application started successfully"
+                rm .env  # 환경변수 파일 삭제
               else
                 echo "Application failed to start. Logs:"
                 sudo docker logs prod
+                rm .env  # 환경변수 파일 삭제
                 exit 1
               fi
             else
               echo "Docker Compose failed"
               sudo docker compose -f docker-compose.yml logs
+              rm .env  # 환경변수 파일 삭제
               exit 1
             fi
