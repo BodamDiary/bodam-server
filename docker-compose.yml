@@ -10,6 +10,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - src/main/resources/ssl:ro
 
     environment:
       SPRING_PROFILES_ACTIVE: prod
