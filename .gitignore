@@ -32,3 +32,9 @@ build/
 .vscode/
 
 env.properties
+
+**/ssl/
+*.p12
+*.pem
+*.crt
+*.key
