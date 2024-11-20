@@ -9,16 +9,15 @@ import java.time.LocalDateTime;
 @Builder
 public class User {
     private int userId;
-    private String email, kakaoId, nickname, userName, password, address, phoneNumber;
+    private String email, kakaoId, nickname, userName, password, address, phoneNumber, profileImage;
     private boolean agreeCondition, isOauth;
     private LocalDateTime createdAt;
-    private MultipartFile profileImage;
 
     public User() {
         super();
     }
 
-    public User(int userId, String email, String kakaoId, String nickname, String userName, String password, String address, String phoneNumber, boolean agreeCondition, boolean isOauth, LocalDateTime createdAt, MultipartFile profileImage) {
+    public User(int userId, String email, String kakaoId, String nickname, String userName, String password, String address, String phoneNumber, boolean agreeCondition, boolean isOauth, LocalDateTime createdAt, String profileImage) {
         this.userId = userId;
         this.email = email;
         this.kakaoId = kakaoId;
@@ -121,11 +120,11 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public MultipartFile getProfileImage() {
+    public String getProfileImage() {
         return profileImage;
     }
 
-    public void setProfileImage(MultipartFile profileImage) {
+    public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
 
