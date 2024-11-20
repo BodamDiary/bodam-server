@@ -93,7 +93,11 @@ jobs:
             echo "ACCESS_KEY exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_CREDENTIALS_ACCESS_KEY\" ]; then echo 'Yes'; else echo 'No'; fi)"
             echo "SECRET_KEY exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_CREDENTIALS_SECRET_KEY\" ]; then echo 'Yes'; else echo 'No'; fi)"
             echo "BUCKET exists: $(if [ ! -z \"$APPLICATION_CLOUD_AWS_S3_BUCKET\" ]; then echo 'Yes'; else echo 'No'; fi)"
-        
+
+            # Docker Compose 실행 전 환경변수 확인 추가
+            echo "Docker environment variables:"
+            sudo docker compose -f docker-compose.yml config | grep CLOUD_AWS
+            
             # 환경변수를 export로 설정하는 부분은 이제 필요 없음 (SSH action이 처리)
             if sudo -E docker compose -f docker-compose.yml -p live_server up -d; then
               sleep 20
