@@ -31,6 +31,8 @@ public class ServerConfig {
             @Override
             protected void postProcessContext(Context context) {
                 logger.info("Configuring security constraints for HTTPS redirect");
+
+                // HTTPS 리다이렉션을 위한 제약 조건 설정
                 SecurityConstraint securityConstraint = new SecurityConstraint();
                 securityConstraint.setUserConstraint("CONFIDENTIAL");
                 SecurityCollection collection = new SecurityCollection();
@@ -40,19 +42,25 @@ public class ServerConfig {
             }
         };
 
-        Connector connector = redirectConnector();
-        logger.info("Adding HTTP connector on port: {}", connector.getPort());
-        tomcat.addAdditionalTomcatConnectors(connector);
-        return tomcat;
-    }
+        // HTTPS 포트 설정
+        tomcat.setPort(httpsPort);
 
-    private Connector redirectConnector() {
+        // HTTP 커넥터 설정
         Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
         connector.setScheme("http");
         connector.setPort(httpPort);
         connector.setSecure(false);
         connector.setRedirectPort(httpsPort);
 
-        return connector;
+        // 추가 커넥터 설정
+        connector.setAllowTrace(false);
+        connector.setEnableLookups(false);
+        connector.setMaxPostSize(10485760); // 10MB
+        connector.setURIEncoding("UTF-8");
+
+        logger.info("Adding HTTP connector on port: {}", connector.getPort());
+        tomcat.addAdditionalTomcatConnectors(connector);
+
+        return tomcat;
     }
 }
