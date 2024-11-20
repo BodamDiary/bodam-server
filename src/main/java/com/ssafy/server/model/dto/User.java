@@ -1,35 +1,27 @@
 package com.ssafy.server.model.dto;
 
-import com.fasterxml.jackson.databind.DatabindException;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     private int userId;
-    private String email, kakaoId, nickname, userName, profileImage, password, address, phoneNumber;
-    private boolean agreeCondition, isOauth;
+    private String email;
+    private String kakaoId;
+    private String nickname;
+    private String userName;
+    private String password;
+    private String address;
+    private String phoneNumber;
+    private String profileImage;
+    private boolean agreeCondition;
+    private boolean isOauth;
     private LocalDateTime createdAt;
-
-    public User() {
-        super();
-    }
-
-    public User(int userId, String email, String kakaoId, String nickname, String userName, String profileImage, String password, String address, String phoneNumber, boolean agreeCondition, boolean isOauth, LocalDateTime createdAt) {
-        this.userId = userId;
-        this.email = email;
-        this.kakaoId = kakaoId;
-        this.nickname = nickname;
-        this.userName = userName;
-        this.profileImage = profileImage;
-        this.password = password;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-        this.agreeCondition = agreeCondition;
-        this.isOauth = isOauth;
-        this.createdAt = createdAt;
-    }
 
     public int getUserId() {
         return userId;
@@ -71,14 +63,6 @@ public class User {
         this.userName = userName;
     }
 
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -101,6 +85,14 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public boolean isAgreeCondition() {
@@ -135,10 +127,10 @@ public class User {
                 ", kakaoId='" + kakaoId + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", userName='" + userName + '\'' +
-                ", profileImage='" + profileImage + '\'' +
                 ", password='" + password + '\'' +
                 ", address='" + address + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", profileImage='" + profileImage + '\'' +
                 ", agreeCondition=" + agreeCondition +
                 ", isOauth=" + isOauth +
                 ", createdAt=" + createdAt +
