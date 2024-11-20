@@ -92,11 +92,17 @@ public class UserController {
         if (loginUser != null) {
             String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId());
             Cookie c = new Cookie("uToken", uToken);
-            c.setDomain("/");
+            c.setDomain("vercel.app");
             c.setPath("/");
             c.setMaxAge(300);
 
+            Cookie c2 = new Cookie("uToken", uToken);
+            c2.setDomain("bodam.site");
+            c2.setPath("/");
+            c2.setMaxAge(300);
+
             response.addCookie(c);
+            response.addCookie(c2);
             return ResponseEntity.status(HttpStatus.OK).body(loginUser);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("유저가 없습니다.");
