@@ -94,6 +94,10 @@ jobs:
 
             # 환경변수 파일 생성
             printenv | grep -E "APPLICATION_|SSL_|DOCKERHUB_" > .env
+          
+            # 환경변수 확인
+            echo "Checking environment variables:"
+            cat .env
 
             # 환경변수 확인
             echo "Checking AWS Environment Variables:"
