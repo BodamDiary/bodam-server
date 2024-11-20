@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
       args:
         ENV: prod
-    image: ${DOCKERHUB_USERNAME:-daheepk}/live_server:latest
+    image: daheepk/live_server:latest
     ports:
       - "80:80"
       - "443:443"
