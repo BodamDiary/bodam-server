@@ -71,6 +71,9 @@ public class UserServiceImpl implements UserService{
     @Override
     public User loginUser(String email, String password) {
         User user = userMapper.selectUserByEmail(email);
+
+        if (user == null) return null;
+
         String salt = saltMapper.selectSalt(user.getUserId());
 
         String hashedPassword = OpenCrypt.byteArrayToHex(OpenCrypt.getSHA256(password, salt));

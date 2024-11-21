@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.server.model.dao.DiaryMapper">
     <select id="selectAllDiaries" parameterType="int" resultType="Diary">
-        SELECT diary_id, title, study_content, created_at
+        SELECT diary_id, title, body, study_content, created_at
         FROM diary_posts
         WHERE user_id = #{userId}
     </select>
