@@ -85,27 +85,16 @@ public class UserController {
     }
 
     @PostMapping("/login-user")
-    public ResponseEntity<?> loginUser(@RequestBody User user, HttpServletResponse response) {
+    public ResponseEntity<String> loginUser(@RequestBody User user, HttpServletResponse response) {
         User loginUser = userService.loginUser(user.getEmail(), user.getPassword());
 
 
         if (loginUser != null) {
             String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId());
-            Cookie c = new Cookie("uToken", uToken);
-            c.setDomain("https://bodam-client.vercel.app");
-            c.setPath("/");
-            c.setMaxAge(300);
 
-            Cookie c2 = new Cookie("uToken", uToken);
-            c2.setDomain("https://bodam.site");
-            c2.setPath("/");
-            c2.setMaxAge(300);
-
-            response.addCookie(c);
-            response.addCookie(c2);
-            return ResponseEntity.status(HttpStatus.OK).body(loginUser);
+            return ResponseEntity.status(HttpStatus.OK).body(uToken);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("유저가 없습니다.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
 }
