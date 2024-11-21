@@ -3,6 +3,7 @@ package com.ssafy.server.model.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.server.model.dao.UserMapper;
 import com.ssafy.server.model.dto.KakaoInfo;
 import com.ssafy.server.model.dto.User;
 import com.ssafy.server.util.JwtTokenProvider;
@@ -32,6 +33,9 @@ public class OAuthService {
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    UserMapper userMapper;
 
     public String getAccessToken(String code) throws JsonProcessingException {
         // HTTP Header 생성
@@ -143,6 +147,7 @@ public class OAuthService {
     }
 
     public int registUser(User user) {
-        return 0;
+
+        return userMapper.insertUser(user);
     }
 }
