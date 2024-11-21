@@ -57,7 +57,7 @@ public class OAuthController {
      * @return
      */
     @GetMapping("/kakao-login")
-    public String kakaoCallback(String code, HttpServletResponse response) {
+    public String kakaoCallback(String code,HttpServletRequest request, HttpServletResponse response) {
 
         // SETP1 : 인가코드 받기
         // (카카오 인증 서버는 서비스 서버의 Redirect URI로 인가 코드를 전달합니다.)
@@ -88,6 +88,7 @@ public class OAuthController {
         // STEP5: 강제 로그인
         // 세션에 회원 정보 저장 & 세션 유지 시간 설정
         if (kakaoMember == null) {
+            HttpSession session = request.getSession();
             System.out.println("redirect to kakao register");
             Cookie c = new Cookie("email", email);
             c.setPath("/");
