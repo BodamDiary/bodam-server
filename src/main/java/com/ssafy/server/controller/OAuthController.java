@@ -95,7 +95,6 @@ public class OAuthController {
             System.out.println("redirect to kakao register");
             Cookie c = new Cookie("email", email);
             c.setPath("/");
-            c.setSecure(true);
             response.addCookie(c);
 
             return "redirect:"+prodUrl + "kakao-signup";
