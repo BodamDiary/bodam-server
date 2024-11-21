@@ -86,7 +86,7 @@ public class OAuthController {
         String email = kakaoInfo.getEmail();
 
 //        String localUrl = "http://localhost:3000/";
-        String prodUrl = "https://bodam-client.vercel.app/";
+        String prodUrl = "https://app.bodam.site/";
 
         // STEP5: 강제 로그인
         // 세션에 회원 정보 저장 & 세션 유지 시간 설정
