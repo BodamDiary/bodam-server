@@ -73,7 +73,7 @@ public class OAuthController {
         User kakaoMember = oAuthService.ifNeedKakaoInfo(kakaoInfo);
         String email = kakaoInfo.getEmail();
 
-        String prodUrl = "https://bodam-client.vercel.app/";
+        String prodUrl = "https://app.bodam.site/";
 
         if (kakaoMember == null) {
             HttpSession session = request.getSession();
