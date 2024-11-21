@@ -13,7 +13,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedOrigins("https://bodam-client.vercel.app", "https://bodam.site", "http://localhost:3000") // 허용할 Origin
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD") // 허용할 HTTP 메서드
                 .allowedHeaders("*") // 모든 헤더 허용
-                .exposedHeaders("Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials") // 클라이언트에서 노출할 헤더
+                .exposedHeaders("Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "Set-Cookie") // 클라이언트에서 노출할 헤더
                 .allowCredentials(true) // 쿠키, 인증 정보 허용
                 .maxAge(3600); // Preflight 요청 결과 캐싱 시간 (초 단위)
     }
