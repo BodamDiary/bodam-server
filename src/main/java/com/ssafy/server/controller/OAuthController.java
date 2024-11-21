@@ -94,8 +94,20 @@ public class OAuthController {
             HttpSession session = request.getSession();
             System.out.println(session.getId());
             System.out.println("redirect to kakao register");
-            Cookie c = new Cookie("email", email);
-            response.addCookie(c);
+//            Cookie c = new Cookie("email", email);
+//            response.addCookie(c);
+
+            ResponseCookie cookie = ResponseCookie.from("email", email)
+                    .path("/")
+                    .sameSite("None")
+                    .httpOnly(true)
+                    .secure(true)
+                    .domain("bodam.site")
+                    .maxAge(3600)
+                    .build();
+
+            response.addHeader("Set-Cookie", cookie.toString());
+
             return "redirect:"+prodUrl+"kakao-signup";
         }
 
