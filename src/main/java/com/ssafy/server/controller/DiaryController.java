@@ -5,6 +5,7 @@ import com.ssafy.server.model.service.DiaryService;
 import com.ssafy.server.util.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,21 @@ public class DiaryController {
     JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/get-all-diaries")
-    ResponseEntity<List<Diary>> getAllDiaries() {
-        int userId = 1;
+    ResponseEntity<List<Diary>> getAllDiaries(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            System.out.println("session null");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String uToken = (String)session.getAttribute("uToken");
+        if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
+            System.out.println("token invalid");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        int userId = jwtTokenProvider.getIdFromToken(uToken);
+        System.out.println("userId=" + userId);
         List<Diary> list = diaryService.getAllDiaries(userId);
 
         if (list != null) {
@@ -68,18 +82,11 @@ public class DiaryController {
     ResponseEntity<Integer> registDiary(@RequestBody Diary diary, HttpServletRequest request) {
         System.out.println("registDiary");
 
-        String uToken = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) {
-            System.out.println("no cookies");
+        HttpSession session = request.getSession(false);
+        if (session == null) {
             return ResponseEntity.badRequest().build();
         }
-        for (Cookie c: request.getCookies()) {
-            if ("uToken".equals(c.getName())) {
-                uToken = c.getValue();
-                break;
-            }
-        }
+        String uToken = (String) session.getAttribute("uToken");
 
         if (uToken == null) {
             return ResponseEntity.badRequest().build();

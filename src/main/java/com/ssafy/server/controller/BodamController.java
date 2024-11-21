@@ -6,6 +6,7 @@ import com.ssafy.server.util.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +50,23 @@ public class BodamController {
         return ResponseEntity.badRequest().body("Bodam register failed");
     }
 
-    @GetMapping("/get-bodam/{userId}")
-    public ResponseEntity<Bodam> getBodam(@PathVariable int userId) {
+    @GetMapping("/get-bodam")
+    public ResponseEntity<Bodam> getBodam(HttpServletRequest request) {
+
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            System.out.println("session null");
+            return ResponseEntity.badRequest().build();
+        }
+
+        String uToken = (String)session.getAttribute("uToken");
+        if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
+            System.out.println("token invalid");
+            return ResponseEntity.badRequest().build();
+        }
+
+        int userId = jwtTokenProvider.getIdFromToken(uToken);
+
         Bodam bodam = bodamService.getBodamByUser(userId);
         System.out.println(bodam);
 
