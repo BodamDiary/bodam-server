@@ -18,8 +18,8 @@ public class SecurityConfig {
             .cors()
             .and()
             .csrf().disable()
-            .authorizeHttpRequests()      // authorizeRequests() 대신
-            .requestMatchers("/**").permitAll()   // antMatchers() 대신
+            .authorizeHttpRequests()
+            .requestMatchers("/**").permitAll()
             .and()
             .requiresChannel()
             .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
