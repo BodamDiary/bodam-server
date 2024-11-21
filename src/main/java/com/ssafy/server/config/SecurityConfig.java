@@ -15,9 +15,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .requiresChannel()
-                .anyRequest()
-                .requiresSecure(); // 모든 요청을 HTTPS로 리다이렉트
+            .cors()
+            .and()
+            .csrf().disable()
+            .authorizeHttpRequests()      // authorizeRequests() 대신
+            .requestMatchers("/**").permitAll()   // antMatchers() 대신
+            .and()
+            .requiresChannel()
+            .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+            .requiresSecure()
+            .and()
+            .headers()
+            .frameOptions().sameOrigin()
+            .and()
+            .logout().disable();
 
         return http.build();
     }
