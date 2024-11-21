@@ -85,6 +85,9 @@ public class OAuthController {
         User kakaoMember = oAuthService.ifNeedKakaoInfo(kakaoInfo);
         String email = kakaoInfo.getEmail();
 
+        String localUrl = "http://localhost:3000/";
+        String prodUrl = "https://bodam-client.vercel.app/";
+
         // STEP5: 강제 로그인
         // 세션에 회원 정보 저장 & 세션 유지 시간 설정
         if (kakaoMember == null) {
@@ -92,12 +95,13 @@ public class OAuthController {
             System.out.println("redirect to kakao register");
             Cookie c = new Cookie("email", email);
             c.setPath("/");
+            c.setSecure(true);
             response.addCookie(c);
 
-            return "redirect:http://localhost:3000/kakao-signup";
+            return "redirect:"+prodUrl + "kakao-signup";
         }
 
-        return "redirect:http://localhost:3000";
+        return "redirect:"+prodUrl;
     }
 
 
