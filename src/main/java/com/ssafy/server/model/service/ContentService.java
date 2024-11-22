@@ -8,4 +8,6 @@ public interface ContentService {
     Content getContent(int contentId);
 
     List<Content> getTodayContent();
+
+    List<Content> getAllContent();
 }

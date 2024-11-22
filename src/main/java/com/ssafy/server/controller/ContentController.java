@@ -47,4 +47,16 @@ public class ContentController {
         log.info("콘텐츠 불러오기 성공");
         return ResponseEntity.ok(list);
     }
-}
+
+    @GetMapping("/get-all-content")
+    public ResponseEntity<List<Content>> getAllContent() {
+        log.info("모든 콘텐츠 가져오기");
+        List<Content> list = contentService.getAllContent();
+
+        if (list == null || list.isEmpty()) {
+            log.info("콘텐츠 없음");
+            return ResponseEntity.internalServerError().build();
+        }
+        log.info("콘텐츠 불러오기 성공");
+        return ResponseEntity.ok(list);
+    }}

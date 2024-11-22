@@ -25,4 +25,9 @@ public class ContentServiceImpl implements ContentService {
     public List<Content> getTodayContent() {
         return contentMapper.selectTodayContent();
     }
+
+    @Override
+    public List<Content> getAllContent() {
+        return contentMapper.selectAllContent();
+    }
 }
