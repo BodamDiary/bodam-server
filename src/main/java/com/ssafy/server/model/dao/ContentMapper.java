@@ -11,4 +11,6 @@ public interface ContentMapper {
     Content selectContent(int contentId);
 
     List<Content> selectTodayContent();
+
+    List<Content> selectAllContent();
 }
