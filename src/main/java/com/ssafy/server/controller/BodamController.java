@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,24 +24,9 @@ public class BodamController {
     JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/regist-bodam")
-    public ResponseEntity<String> registBodam(@RequestBody Bodam bodam, HttpServletRequest request, HttpServletResponse response) {
-        String uToken = null;
-
-        for (Cookie c : request.getCookies()) {
-            if (c.getName().equals("uToken")) {
-                uToken = c.getValue();
-                break;
-            }
-        }
-
-        if (uToken == null) {
-            return ResponseEntity.badRequest().body("Bodam register failed");
-        }
-
-        boolean isValid = jwtTokenProvider.validToken(uToken);
-        if (!isValid) {
-            return ResponseEntity.badRequest().body("Bodam register failed");
-        }
+    public ResponseEntity<String> registBodam(@RequestBody Bodam bodam, Authentication authentication, HttpServletResponse response) {
+        int userId = Integer.parseInt(authentication.getName());
+        bodam.setUserId(userId);
 
         int isRegistered = bodamService.registBodam(bodam);
 
@@ -52,21 +38,9 @@ public class BodamController {
     }
 
     @GetMapping("/get-bodam")
-    public ResponseEntity<Bodam> getBodam(HttpServletRequest request) {
+    public ResponseEntity<Bodam> getBodam(Authentication authentication) {
 
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            System.out.println("session null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String uToken = (String)session.getAttribute("uToken");
-        if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
-            System.out.println("token invalid");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        int userId = jwtTokenProvider.getIdFromToken(uToken);
+        int userId = Integer.parseInt(authentication.getName());
 
         Bodam bodam = bodamService.getBodamByUser(userId);
         System.out.println(bodam);

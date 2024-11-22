@@ -3,7 +3,6 @@ package com.ssafy.server.controller;
 import com.ssafy.server.model.dto.User;
 import com.ssafy.server.model.service.UserService;
 import com.ssafy.server.util.JwtTokenProvider;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,21 +42,9 @@ public class UserController {
 
 
     @GetMapping("/get-user")
-    public ResponseEntity<User> getUser(HttpServletRequest request){
+    public ResponseEntity<User> getUser(Authentication authentication){
 
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            System.out.println("session null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        String uToken = (String)session.getAttribute("uToken");
-        if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
-            System.out.println("token invalid");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        int userId = jwtTokenProvider.getIdFromToken(uToken);
+        int userId = Integer.parseInt(authentication.getName());
         System.out.println("userId="+userId);
         User user = userService.getUser(userId);
         System.out.println(user);

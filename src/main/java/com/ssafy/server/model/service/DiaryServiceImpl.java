@@ -26,7 +26,12 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
-    public boolean deleteDiary(int diaryId) {
+    public boolean deleteDiary(int diaryId, int userId) {
+        Diary diary = diaryMapper.selectDiary(diaryId);
+        if (diary.getUserId() != userId) {
+            return false;
+        }
+
         return diaryMapper.deleteDiary(diaryId) == 1;
     }
 
