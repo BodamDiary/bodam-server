@@ -75,7 +75,7 @@ public class OAuthController {
         User kakaoMember = oAuthService.ifNeedKakaoInfo(kakaoInfo);
         String email = kakaoInfo.getEmail();
 
-        String prodUrl = "https://app.bodam.site/";
+        String prodUrl = "http://app.bodam.site/";
 
         if (kakaoMember == null) {
             String emailToken = jwtTokenProvider.generateJwt(email);
@@ -105,7 +105,7 @@ public class OAuthController {
         return "redirect:"+prodUrl+"dashboard";
     }
 
-    @PostMapping("/kakao-regist-user")
+    @PostMapping("/regist-kakao")
     public ResponseEntity<String> kakaoRegistUser(@RequestBody User user, HttpServletRequest request){
         log.info("카카오 회원가입 요청 시작");
 

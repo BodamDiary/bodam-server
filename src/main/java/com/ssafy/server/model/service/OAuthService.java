@@ -147,6 +147,12 @@ public class OAuthService {
     }
 
     public int registUser(User user) {
+        System.out.println(user.getEmail());
+        System.out.println(user.getUserName());
+        System.out.println(user.getNickname());
+        if (user.getEmail() == null || user.getEmail().isEmpty() || user.getUserName() == null || user.getUserName().isEmpty() || user.getNickname() == null || user.getNickname().isEmpty()) {
+            return -1;
+        }
 
         return userMapper.insertUser(user);
     }
