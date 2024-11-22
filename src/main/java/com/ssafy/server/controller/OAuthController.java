@@ -75,7 +75,7 @@ public class OAuthController {
         User kakaoMember = oAuthService.ifNeedKakaoInfo(kakaoInfo);
         String email = kakaoInfo.getEmail();
 
-        String prodUrl = "http://localhost:3000/";
+        String prodUrl = "http://app.bodam.site/";
 
         if (kakaoMember == null) {
             String emailToken = jwtTokenProvider.generateJwt(email);
