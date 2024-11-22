@@ -2,6 +2,8 @@ package com.ssafy.server.controller;
 
 import com.ssafy.server.model.dto.Content;
 import com.ssafy.server.model.service.ContentService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+@Slf4j
 @RestController
 @RequestMapping("/content")
 public class ContentController {
@@ -28,5 +33,18 @@ public class ContentController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/get-today-content")
+    public ResponseEntity<List<Content>> getTodayContent() {
+        log.info("오늘의 콘텐츠 가져오기");
+        List<Content> list = contentService.getTodayContent();
+
+        if (list == null || list.isEmpty()) {
+            log.info("콘텐츠 없음");
+            return ResponseEntity.internalServerError().build();
+        }
+        log.info("콘텐츠 불러오기 성공");
+        return ResponseEntity.ok(list);
     }
 }
