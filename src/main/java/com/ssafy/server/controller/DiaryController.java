@@ -74,6 +74,7 @@ public class DiaryController {
 
         if (diary != null) {
             if (diary.getUserId() != userId) {
+                System.out.println("userId not matching");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
             System.out.println(diary);

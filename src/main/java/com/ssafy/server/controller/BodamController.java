@@ -57,13 +57,13 @@ public class BodamController {
         HttpSession session = request.getSession(false);
         if (session == null) {
             System.out.println("session null");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String uToken = (String)session.getAttribute("uToken");
         if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
             System.out.println("token invalid");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         int userId = jwtTokenProvider.getIdFromToken(uToken);

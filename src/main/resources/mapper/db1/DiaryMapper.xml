@@ -10,7 +10,7 @@
     </select>
 
     <select id="selectDiary" parameterType="int" resultType="Diary">
-        SELECT diary_id, title, body, A.created_at, study_content, nickname
+        SELECT diary_id, A.user_id, title, body, A.created_at, study_content, nickname
         FROM diary_posts A inner join users B ON A.user_id=B.user_id
         WHERE diary_id = #{diaryId}
     </select>
