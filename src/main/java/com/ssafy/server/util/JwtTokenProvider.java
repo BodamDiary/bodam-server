@@ -17,11 +17,24 @@ public class JwtTokenProvider {
     // JWT 발급 메서드
     public String generateJwt(int id) {
 
-        // JWT 생성 (이메일 포함)
+        // JWT 생성 (아이디 포함)
         String jwtToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .claim("id", id)
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 10분 후 만료
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+
+        return jwtToken;
+    }
+
+    public String generateJwt(String email) {
+
+        // JWT 생성 (이메일 포함)
+        String jwtToken = Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .claim("email", email)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30분 후 만료
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
@@ -51,5 +64,10 @@ public class JwtTokenProvider {
     public int getIdFromToken(String token) {
         Claims claims = getClaims(token);
         return claims.get("id", Integer.class); // "email" 키로 Claim 값을 가져옴
+    }
+
+    public String getEmailFromToken(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("email", String.class); // "email" 키로 Claim 값을 가져옴
     }
 }

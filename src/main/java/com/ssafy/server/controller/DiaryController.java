@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,21 +25,10 @@ public class DiaryController {
     JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/get-all-diaries")
-    ResponseEntity<List<Diary>> getAllDiaries(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            System.out.println("session null");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    ResponseEntity<List<Diary>> getAllDiaries(Authentication authentication) {
 
-        String uToken = (String)session.getAttribute("uToken");
-        if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
-            System.out.println("token invalid");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        int userId = Integer.parseInt(authentication.getName());
 
-        int userId = jwtTokenProvider.getIdFromToken(uToken);
-        System.out.println("userId=" + userId);
         List<Diary> list = diaryService.getAllDiaries(userId);
 
         if (list != null) {
@@ -54,11 +44,19 @@ public class DiaryController {
     }
 
     @GetMapping("/get-diary/{diaryId}")
-    ResponseEntity<Diary> getDiary(@PathVariable int diaryId) {
+    ResponseEntity<Diary> getDiary(@PathVariable int diaryId, Authentication authentication) {
+
+        int userId = Integer.parseInt(authentication.getName());
+        System.out.println("userId=" + userId);
+
         Diary diary = diaryService.getDiary(diaryId);
-        System.out.println(diary);
 
         if (diary != null) {
+            if (diary.getUserId() != userId) {
+                System.out.println("userId not matching");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            System.out.println(diary);
             return ResponseEntity.ok(diary);
         }
 
@@ -66,9 +64,11 @@ public class DiaryController {
     }
 
     @PostMapping("/delete-diary/{diaryId}")
-    ResponseEntity<String> deleteDiary(@PathVariable int diaryId) {
+    ResponseEntity<String> deleteDiary(@PathVariable int diaryId, Authentication authentication) {
+        int userId = Integer.parseInt(authentication.getName());
+
         System.out.println("deleteDiary");
-        boolean isDeleted = diaryService.deleteDiary(diaryId);
+        boolean isDeleted = diaryService.deleteDiary(diaryId, userId);
         System.out.println(isDeleted);
 
         if (isDeleted) {
@@ -79,22 +79,10 @@ public class DiaryController {
     }
 
     @PostMapping("/regist-diary")
-    ResponseEntity<Integer> registDiary(@RequestBody Diary diary, HttpServletRequest request) {
+    ResponseEntity<Integer> registDiary(@RequestBody Diary diary, Authentication authentication) {
         System.out.println("registDiary");
 
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        String uToken = (String) session.getAttribute("uToken");
-
-        if (uToken == null) {
-            return ResponseEntity.badRequest().build();
-        }
-        if (!jwtTokenProvider.validToken(uToken)) {
-            return ResponseEntity.badRequest().build();
-        }
-        int userId = jwtTokenProvider.getIdFromToken(uToken);
+        int userId = Integer.parseInt(authentication.getName());
 
         diary.setUserId(userId);
         boolean isRegistered = diaryService.registDiary(diary);

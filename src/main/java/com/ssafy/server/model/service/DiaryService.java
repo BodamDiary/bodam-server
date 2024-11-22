@@ -9,7 +9,7 @@ public interface DiaryService {
 
     Diary getDiary(int diaryId);
 
-    boolean deleteDiary(int diaryId);
+    boolean deleteDiary(int diaryId, int userId);
 
     boolean registDiary(Diary diary);
 }

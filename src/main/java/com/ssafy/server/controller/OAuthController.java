@@ -11,11 +11,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +50,8 @@ public class OAuthController {
 
     @GetMapping("/kakao-login")
     public String kakaoCallback(String code, HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
+
         log.info("카카오 콜백 호출 - 인가 코드: {}", code);
 
         String accessToken = null;
@@ -76,7 +78,8 @@ public class OAuthController {
         String prodUrl = "https://app.bodam.site/";
 
         if (kakaoMember == null) {
-            HttpSession session = request.getSession();
+            String emailToken = jwtTokenProvider.generateJwt(email);
+            session.setAttribute("emailToken", emailToken);
             log.info("신규 사용자 확인 - 세션 ID: {}", session.getId());
 
             ResponseCookie cookie = ResponseCookie.from("email", email)
@@ -95,44 +98,39 @@ public class OAuthController {
         }
 
         log.info("기존 사용자 확인 - 로그인 성공");
-        return "redirect:"+prodUrl;
+
+        String uToken = jwtTokenProvider.generateJwt(kakaoMember.getUserId());
+        session.setAttribute("uToken", uToken);
+
+        return "redirect:"+prodUrl+"dashboard";
     }
 
     @PostMapping("/kakao-regist-user")
     public ResponseEntity<String> kakaoRegistUser(@RequestBody User user, HttpServletRequest request){
         log.info("카카오 회원가입 요청 시작");
 
-        Cookie[] cookies = request.getCookies();
-        log.info("수신된 쿠키 개수: {}", cookies != null ? cookies.length : 0);
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return ResponseEntity.badRequest().body("no session");
+        }
+        String emailToken = (String)session.getAttribute("emailToken");
 
-        int id = 0;
-        String token = null;
-
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                log.info("쿠키 확인 - 이름: {}, 값: {}", cookie.getName(), cookie.getValue());
-                if ("id".equals(cookie.getName())) {
-                    id = Integer.parseInt(cookie.getValue());
-                }
-                if ("token".equals(cookie.getName())) {
-                    token = cookie.getValue();
-                }
-            }
-        } else {
-            log.warn("쿠키가 존재하지 않습니다.");
+        if (emailToken == null) {
+            return ResponseEntity.badRequest().body("no token");
         }
 
-        boolean isValid = jwtTokenProvider.validToken(token);
+        boolean isValid = jwtTokenProvider.validToken(emailToken);
         log.info("토큰 유효성 검증 결과: {}", isValid);
 
         if (isValid) {
-            int tokenId = jwtTokenProvider.getIdFromToken(token);
-            log.info("토큰에서 추출한 ID: {}", tokenId);
+            String email = jwtTokenProvider.getEmailFromToken(emailToken);
+            log.info("토큰에서 추출한 email: {}", email);
 
-            if (id != 0 && id == tokenId) {
+            if (email != null) {
+                user.setEmail(email);
                 int successUser = oAuthService.registUser(user);
                 if (successUser > 0) {
-                    log.info("회원가입 성공 - 사용자 ID: {}", id);
+                    log.info("회원가입 성공 - 사용자 email: {}", email);
                     return ResponseEntity.ok("Regist user successfully");
                 }
                 log.error("회원가입 실패 - 사용자 정보 저장 실패");
