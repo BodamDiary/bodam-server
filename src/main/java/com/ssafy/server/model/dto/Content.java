@@ -3,7 +3,20 @@ package com.ssafy.server.model.dto;
 public class Content {
 
     private int contentId, difficulty;
-    private String title, url, tag, description;
+    private String title;
+    private String url;
+    private String tag;
+    private String description;
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    private String thumbnail;
 
     public int getContentId() {
         return contentId;
@@ -62,6 +75,7 @@ public class Content {
                 ", url='" + url + '\'' +
                 ", tag='" + tag + '\'' +
                 ", description='" + description + '\'' +
+                ", thumbnail='" + thumbnail + '\'' +
                 '}';
     }
 }
