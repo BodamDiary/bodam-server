@@ -54,11 +54,29 @@ public class DiaryController {
     }
 
     @GetMapping("/get-diary/{diaryId}")
-    ResponseEntity<Diary> getDiary(@PathVariable int diaryId) {
+    ResponseEntity<Diary> getDiary(@PathVariable int diaryId, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            System.out.println("session null");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String uToken = (String)session.getAttribute("uToken");
+        if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
+            System.out.println("token invalid");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        int userId = jwtTokenProvider.getIdFromToken(uToken);
+        System.out.println("userId=" + userId);
+
         Diary diary = diaryService.getDiary(diaryId);
-        System.out.println(diary);
 
         if (diary != null) {
+            if (diary.getUserId() != userId) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            System.out.println(diary);
             return ResponseEntity.ok(diary);
         }
 
