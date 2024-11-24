@@ -16,4 +16,6 @@ public interface DiaryService {
 
     List<String> uploadDiaryImages(MultipartFile[] files, int userId);
 
+    boolean updateDiary(Diary diary);
+
 }

@@ -75,10 +75,10 @@ public class OAuthController {
         User kakaoMember = oAuthService.ifNeedKakaoInfo(kakaoInfo);
         String email = kakaoInfo.getEmail();
 
-        String prodUrl = "https://app.bodam.site/";
+        String prodUrl = "http://app.bodam.site/";
 
         if (kakaoMember == null) {
-            String emailToken = jwtTokenProvider.generateJwt(email);
+            String emailToken = jwtTokenProvider.generateJwt(email, 5);
             session.setAttribute("emailToken", emailToken);
             log.info("신규 사용자 확인 - 세션 ID: {}", session.getId());
 
@@ -99,13 +99,13 @@ public class OAuthController {
 
         log.info("기존 사용자 확인 - 로그인 성공");
 
-        String uToken = jwtTokenProvider.generateJwt(kakaoMember.getUserId());
+        String uToken = jwtTokenProvider.generateJwt(kakaoMember.getUserId(), 30);
         session.setAttribute("uToken", uToken);
 
         return "redirect:"+prodUrl+"dashboard";
     }
 
-    @PostMapping("/kakao-regist-user")
+    @PostMapping("/regist-kakao")
     public ResponseEntity<String> kakaoRegistUser(@RequestBody User user, HttpServletRequest request){
         log.info("카카오 회원가입 요청 시작");
 

@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class User {
     private int userId;
     private String email;
-    private String kakaoId;
     private String nickname;
     private String userName;
     private String password;
@@ -37,14 +36,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getKakaoId() {
-        return kakaoId;
-    }
-
-    public void setKakaoId(String kakaoId) {
-        this.kakaoId = kakaoId;
     }
 
     public String getNickname() {
@@ -126,7 +117,6 @@ public class User {
         return "User{" +
                 "userId=" + userId +
                 ", email='" + email + '\'' +
-                ", kakaoId='" + kakaoId + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +

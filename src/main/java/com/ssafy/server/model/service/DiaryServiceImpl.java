@@ -46,7 +46,12 @@ public class DiaryServiceImpl implements DiaryService {
 
     @Override
     public boolean registDiary(Diary diary) {
-        return diaryMapper.insertDiary(diary);
+        return diaryMapper.insertDiary(diary) == 1;
+    }
+
+    @Override
+    public boolean updateDiary(Diary diary) {
+        return diaryMapper.updateDiary(diary) == 1;
     }
 
     @Override

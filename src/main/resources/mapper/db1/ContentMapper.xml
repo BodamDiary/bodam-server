@@ -8,4 +8,16 @@
         FROM contents
         WHERE content_id = #{contentId}
     </select>
+
+    <select id="selectTodayContent" resultType="Content">
+        SELECT *
+        FROM contents
+        ORDER BY created_at DESC
+        LIMIT 3
+    </select>
+
+    <select id="selectAllContent" resultType="Content">
+        SELECT *
+        FROM contents
+    </select>
 </mapper>

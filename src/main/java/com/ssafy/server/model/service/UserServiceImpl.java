@@ -35,6 +35,10 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public int registUser(User user) {
+        if (user.getEmail() == null || user.getEmail().isEmpty() || user.getPassword() == null || user.getUserName() == null || user.getUserName().isEmpty() || user.getNickname() == null || user.getNickname().isEmpty()) {
+            return -1;
+        }
+
         String pw = user.getPassword();
 
         Pattern pattern = Pattern.compile(PW_PATTERN);

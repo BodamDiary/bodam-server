@@ -17,4 +17,7 @@ public interface DiaryMapper {
     boolean insertDiary(Diary diary);
 
     boolean insertDiaryImage(DiaryImage diaryImage);
+
+    int updateDiary(Diary diary);
+
 }

@@ -85,10 +85,13 @@ public class UserController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping("/delete-user/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable("userId") int userId){
+    @GetMapping("/delete-user")
+    public ResponseEntity<String> deleteUser(Authentication authentication, HttpSession session){
+        int userId = Integer.parseInt(authentication.getName());
         int isDeleted = userService.removeUser(userId);
+
         if (isDeleted > 0){
+            session.invalidate();
             return ResponseEntity.ok("Delete user successfully");
         }
         return ResponseEntity.badRequest().body("Delete user failed");
@@ -108,7 +111,7 @@ public class UserController {
 
         if (loginUser != null) {
             System.out.println("loginUser found");
-            String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId());
+            String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId(), 30);
             HttpSession session = request.getSession();
             session.setAttribute("uToken", uToken);
 
@@ -164,5 +167,15 @@ public class UserController {
         }
     }
 
+
+
+    @GetMapping("/logout-user")
+    public ResponseEntity<String> logoutUser(Authentication authentication, HttpSession session) {
+
+        System.out.println("로그아웃");
+        session.invalidate();
+
+        return null;
+    }
 
 }

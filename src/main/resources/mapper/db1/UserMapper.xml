@@ -5,8 +5,8 @@
 <mapper namespace="com.ssafy.server.model.dao.UserMapper">
 
     <insert id="insertUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
-        INSERT INTO users (email, kakao_id, nickname, user_name, password, profile_image, address, phone_number, agree_condition, is_oauth, created_at)
-        VALUES (#{email}, #{kakaoId}, #{nickname}, #{userName}, #{password}, #{profileImage}, #{address}, #{phoneNumber}, #{agreeCondition}, #{isOauth}, CURRENT_TIMESTAMP)
+        INSERT INTO users (email, nickname, user_name, password, profile_image, address, phone_number, agree_condition, is_oauth, created_at)
+        VALUES (#{email}, #{nickname}, #{userName}, #{password}, #{profileImage}, #{address}, #{phoneNumber}, #{agreeCondition}, #{isOauth}, CURRENT_TIMESTAMP)
     </insert>
 
     <select id="selectUser" parameterType="int" resultType="User">
