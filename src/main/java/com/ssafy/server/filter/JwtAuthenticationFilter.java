@@ -29,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenProvider jwtTokenProvider;
     // 필터를 적용하지 않을 URL 패턴들
     private static final List<String> EXCLUDE_URLS = Arrays.asList(
+            "/",
             "/content",
             "/users/login-user",
             "/users/regist-user",

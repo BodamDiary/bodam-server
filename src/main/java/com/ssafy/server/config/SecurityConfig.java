@@ -62,11 +62,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 
-                // HTTPS 설정
+                // HTTPS 설정 수정
                 .requiresChannel(channel -> channel
-                        .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
-                        .requiresSecure()
-                )
+                        .anyRequest().requiresSecure())  // 모든 요청에 대해 HTTPS 요구
 
                 // Frame Options 설정
                 .headers(headers -> headers
