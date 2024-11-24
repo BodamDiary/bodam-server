@@ -1,6 +1,7 @@
 package com.ssafy.server.model.dao;
 
 import com.ssafy.server.model.dto.Diary;
+import com.ssafy.server.model.dto.DiaryImage;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -13,7 +14,10 @@ public interface DiaryMapper {
 
     int deleteDiary(int diaryId);
 
-    int insertDiary(Diary diary);
+    boolean insertDiary(Diary diary);
+
+    boolean insertDiaryImage(DiaryImage diaryImage);
 
     int updateDiary(Diary diary);
+
 }

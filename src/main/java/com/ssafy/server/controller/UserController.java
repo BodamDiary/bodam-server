@@ -1,6 +1,7 @@
 package com.ssafy.server.controller;
 
 import com.ssafy.server.model.dto.User;
+import com.ssafy.server.model.service.S3Uploader;
 import com.ssafy.server.model.service.UserService;
 import com.ssafy.server.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,8 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,6 +28,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    S3Uploader s3Uploader;
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
@@ -113,6 +121,54 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @PostMapping("/update-user/profile-image/upload")
+    public ResponseEntity<Map<String, String>> updateUserProfileImage(
+            @RequestParam("profileImage") MultipartFile file,
+            Authentication authentication) {
+        try {
+            int userId = Integer.parseInt(authentication.getName());
+            User user = userService.getUser(userId);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "사용자를 찾을 수 없습니다."));
+            }
+
+            // 이미지 URL을 반환받도록 수정
+            String imageUrl = userService.uploadProfileImage(file, user);
+            Map<String, String> response = new HashMap<>();
+
+            response.put("message", "프로필 이미지가 성공적으로 업로드되었습니다.");
+            response.put("imageUrl", imageUrl);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "프로필 업로드에 실패했습니다."));
+        }
+    }
+
+    @PostMapping("/update-user/profile-image/delete")
+    public ResponseEntity<Map<String, String>> deleteUserProfileImage(
+            Authentication authentication) {
+        try {
+            int userId = Integer.parseInt(authentication.getName());
+            User user = userService.getUser(userId);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "사용자를 찾을 수 없습니다."));
+            }
+
+            userService.deleteProfileImage(user);
+
+            return ResponseEntity.ok(Map.of("message", "프로필 이미지가 성공적으로 삭제되었습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "프로필 이미지 삭제에 실패했습니다."));
+        }
+    }
+
+
+
     @GetMapping("/logout-user")
     public ResponseEntity<String> logoutUser(Authentication authentication, HttpSession session) {
 
@@ -121,4 +177,5 @@ public class UserController {
 
         return null;
     }
+
 }

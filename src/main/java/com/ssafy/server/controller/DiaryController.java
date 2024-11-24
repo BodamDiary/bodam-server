@@ -1,18 +1,27 @@
 package com.ssafy.server.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.server.model.dto.Diary;
+import com.ssafy.server.model.dto.User;
 import com.ssafy.server.model.service.DiaryService;
+import com.ssafy.server.model.service.UserService;
+import com.ssafy.server.model.service.UserServiceImpl;
 import com.ssafy.server.util.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springdoc.core.service.GenericResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.ImageProducer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/diary")
@@ -22,7 +31,14 @@ public class DiaryController {
     DiaryService diaryService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private GenericResponseService responseBuilder;
+    @Autowired
+    private UserServiceImpl userServiceImpl;
 
     @GetMapping("/get-all-diaries")
     ResponseEntity<List<Diary>> getAllDiaries(Authentication authentication) {
@@ -79,20 +95,47 @@ public class DiaryController {
     }
 
     @PostMapping("/regist-diary")
-    ResponseEntity<Integer> registDiary(@RequestBody Diary diary, Authentication authentication) {
+    ResponseEntity<Map<String, Object>> registDiary(@RequestParam(value = "diaryImages", required = false) MultipartFile[] files, @RequestParam("diary") String diaryJson, Authentication authentication) {
         System.out.println("registDiary");
 
-        int userId = Integer.parseInt(authentication.getName());
+        ObjectMapper mapper = new ObjectMapper();
+        Diary diary;
+        try{
+            diary=mapper.readValue(diaryJson, Diary.class);
+            int userId = Integer.parseInt(authentication.getName());
+            System.out.println("userId=" + userId);
+            diary.setUserId(userId);
 
-        diary.setUserId(userId);
-        boolean isRegistered = diaryService.registDiary(diary);
-        System.out.println(diary.getDiaryId());
+            User user = userService.getUser(userId);
+            if (user == null){
+                System.out.println("유저를 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "사용자를 찾을 수 없습니다."));
+            }
+            boolean isRegistered = diaryService.registDiary(diary);
+            if (!isRegistered) {
+                System.out.println("다이어리가 등록되지 않았습니다. 1");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "다이어리 등록에 실패했습니다."));
+            }
 
-        if (isRegistered) {
-            return ResponseEntity.ok(diary.getDiaryId());
+            int diaryId = diary.getDiaryId();
+            System.out.println("diaryId = "+ diaryId);
+
+            List<String> imageUrls = diaryService.uploadDiaryImages(files, diaryId);
+            Map<String, Object> response = new HashMap<>();
+            if (imageUrls.size() == 0) {
+                System.out.println("다이어리 이미지가 없습니다 2");
+            }
+            System.out.println("다이어리가 성공적으로 등록되었습니다. ");
+            response.put("message", "다이어리가 성공적으로 등록되었습니다.");
+            response.put("imageUrls", imageUrls);
+            response.put("diaryId", diaryId);
+
+            return ResponseEntity.ok(response);
+
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "게시글 등록에 실패했습니다."));
         }
 
-        return ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/update-diary/{diaryId}")

@@ -19,4 +19,6 @@ public interface UserMapper {
     int updateUser(User user);
 
     int deleteUser(int userId);
+
+    int updateProfileImage(User user);
 }
