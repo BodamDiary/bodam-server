@@ -10,7 +10,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 모든 경로에 대해 CORS 허용
-                .allowedOrigins("https://bodam-client.vercel.app", "https://bodam.site", "http://localhost:3000") // 허용할 Origin
+                .allowedOrigins("https://app.bodam.site", "https://bodam.site", "http://localhost:3000") // 허용할 Origin
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD") // 허용할 HTTP 메서드
                 .allowedHeaders("*") // 모든 헤더 허용
                 .exposedHeaders("Authorization", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "Set-Cookie") // 클라이언트에서 노출할 헤더
