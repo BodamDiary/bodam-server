@@ -34,7 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // CORS 설정 활성화
-//                .cors(cors -> cors.configure(http))
+                .cors(cors -> cors.configure(http))
 
                 // CSRF 보호 비활성화
                 .csrf(csrf -> csrf.disable())
@@ -44,8 +44,9 @@ public class SecurityConfig {
 
                 // 요청 URL별 인증 설정
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/content/**",
-                                "/",
+                        .requestMatchers(
+                                "/**",
+                                "/content/**",
                                 "/users/login-user",
                                 "/users/regist-user",
                                 "/kakao",
