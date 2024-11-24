@@ -25,4 +25,10 @@
         (title, body, study_content, user_id)
         VALUE (#{title}, #{body}, #{studyContent}, #{userId})
     </insert>
+
+    <update id="updateDiary" parameterType="Diary">
+        UPDATE diary_posts
+        SET title=#{title}, study_content=#{studyContent}, body=#{body}
+        WHERE user_id=#{userId} AND diary_id=#{diaryId}
+    </update>
 </mapper>
