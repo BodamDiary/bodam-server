@@ -84,9 +84,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (UnauthorizedException e) {
+            log.info("사용자를 찾을 수 없는 오류");
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write(e.getMessage());
         } catch (Exception e) {
+            log.info("서버오류 발생");
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             response.getWriter().write("서버 오류가 발생했습니다.");
         }
