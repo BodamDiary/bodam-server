@@ -45,7 +45,6 @@ public class SecurityConfig {
                 // 요청 URL별 인증 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/**",
                                 "/content/**",
                                 "/users/login-user",
                                 "/users/regist-user",
