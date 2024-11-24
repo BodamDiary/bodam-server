@@ -25,4 +25,9 @@
         (title, body, study_content, user_id)
         VALUE (#{title}, #{body}, #{studyContent}, #{userId})
     </insert>
+
+    <insert id="insertDiaryImage" parameterType="diaryImage" useGeneratedKeys="true" keyProperty="diaryImageId">
+        INSERT INTO diary_images (diary_id, file_path, created_at)
+        VALUES (#{diaryId}, #{filePath}, #{createdAt})
+    </insert>
 </mapper>

@@ -1,6 +1,9 @@
 package com.ssafy.server.model.dto;
 
+import org.w3c.dom.stylesheets.LinkStyle;
+
 import java.util.Date;
+import java.util.List;
 
 public class Diary {
 
@@ -65,16 +68,5 @@ public class Diary {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public String toString() {
-        return "Diary{" +
-                "diaryId=" + diaryId +
-                ", userId=" + userId +
-                ", title='" + title + '\'' +
-                ", body='" + body + '\'' +
-                ", studyContent='" + studyContent + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", createdAt=" + createdAt +
-                '}';
-    }
+
 }
