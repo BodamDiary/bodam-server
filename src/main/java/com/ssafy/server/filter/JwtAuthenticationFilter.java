@@ -31,7 +31,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtTokenProvider jwtTokenProvider;
     // 필터를 적용하지 않을 URL 패턴들
     private static final List<String> EXCLUDE_URLS = Arrays.asList(
-            "/",
             "/content",
             "/users/login-user",
             "/users/regist-user",
@@ -51,12 +50,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
+
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-
+        log.info("do filter에 들어옴");
         try {
+            log.info("try에 들어옴");
             HttpSession session = request.getSession(false);
+            log.info("request.getSession 지나감");
             if (session == null) {
                 log.info("세션이 존재하지 않습니다.");
                 throw new UnauthorizedException("세션이 존재하지 않습니다.");

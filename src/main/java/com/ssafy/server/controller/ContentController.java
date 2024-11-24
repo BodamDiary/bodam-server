@@ -43,7 +43,6 @@ public class ContentController {
         List<Content> list = contentService.getTodayContent();
         HttpSession session = request.getSession(false);
         log.info("세션아이디" + session.getId());
-        System.out.println("세션 아이디 : " + session.getId());
         if (list == null || list.isEmpty()) {
             log.info("콘텐츠 없음");
             return ResponseEntity.internalServerError().build();
