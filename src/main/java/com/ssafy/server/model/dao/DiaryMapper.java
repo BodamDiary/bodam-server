@@ -13,5 +13,7 @@ public interface DiaryMapper {
 
     int deleteDiary(int diaryId);
 
-    boolean insertDiary(Diary diary);
+    int insertDiary(Diary diary);
+
+    int updateDiary(Diary diary);
 }

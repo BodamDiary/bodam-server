@@ -103,7 +103,7 @@ public class UserController {
 
         if (loginUser != null) {
             System.out.println("loginUser found");
-            String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId());
+            String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId(), 30);
             HttpSession session = request.getSession();
             session.setAttribute("uToken", uToken);
 

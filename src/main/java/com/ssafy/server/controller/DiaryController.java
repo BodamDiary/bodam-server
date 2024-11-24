@@ -94,4 +94,33 @@ public class DiaryController {
 
         return ResponseEntity.badRequest().build();
     }
+
+    @PostMapping("/update-diary/{diaryId}")
+    ResponseEntity<String> updateDiary(@RequestBody Diary diary, @PathVariable int diaryId, Authentication authentication) {
+        System.out.println("update-diary");
+        int userId = Integer.parseInt(authentication.getName());
+        System.out.println("userId="+userId);
+
+        Diary diary1 = diaryService.getDiary(diaryId);
+
+        if (diary1 == null) {
+            return ResponseEntity.badRequest().body("일기 수정이 정상적으로 처리되지 않았습니다.");
+        }
+        if (diary1.getUserId() != userId) {
+            System.out.println("unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        diary.setDiaryId(diaryId);
+        diary.setUserId(userId);
+        boolean isUpdated = diaryService.updateDiary(diary);
+
+        if(isUpdated) {
+            System.out.println("diary updated");
+            return ResponseEntity.ok("일기 수정이 완료되었습니다.");
+        }
+
+        System.out.println("diary update fail");
+        return ResponseEntity.badRequest().body("일기 수정이 정상적으로 처리되지 않았습니다.");
+    }
 }

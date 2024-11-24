@@ -15,26 +15,26 @@ public class JwtTokenProvider {
     String secretKey;
 
     // JWT 발급 메서드
-    public String generateJwt(int id) {
+    public String generateJwt(int id, int expiration) {
 
         // JWT 생성 (아이디 포함)
         String jwtToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .claim("id", id)
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)) // 10분 후 만료
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * expiration)) // 10분 후 만료
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
         return jwtToken;
     }
 
-    public String generateJwt(String email) {
+    public String generateJwt(String email, int expiration) {
 
         // JWT 생성 (이메일 포함)
         String jwtToken = Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .claim("email", email)
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30분 후 만료
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * expiration))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
