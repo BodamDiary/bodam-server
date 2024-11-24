@@ -1,6 +1,7 @@
 package com.ssafy.server.config;
 
 import com.ssafy.server.filter.JwtAuthenticationFilter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * Spring Security 설정 클래스
  * Production 환경에서만 적용되는 보안 설정을 포함
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -24,6 +26,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.info("security filter chain에 들어옴");
         http
                 // CORS 설정 활성화
                 .cors(cors -> cors.configure(http))
