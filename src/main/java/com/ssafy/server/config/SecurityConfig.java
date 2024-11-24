@@ -22,15 +22,6 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    /**
-     * Security 필터 체인 구성
-     * - CORS 설정
-     * - CSRF 비활성화
-     * - JWT 인증 필터 추가
-     * - HTTPS 리다이렉션
-     * - Frame Options 설정
-     * - 로그아웃 비활성화
-     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -58,9 +49,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated()  // 그 외 요청은 인증 필요
                 )
 
+
+                .requiresChannel(channel -> channel
+                        .anyRequest().requiresSecure())
+
                 // 세션 관리 설정 추가
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
 
                 // HTTPS 설정
                 .requiresChannel(channel -> channel
@@ -71,6 +66,9 @@ public class SecurityConfig {
                 // Frame Options 설정
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000))
                 )
 
                 // 로그아웃 비활성화
