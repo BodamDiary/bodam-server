@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -56,6 +57,10 @@ public class SecurityConfig {
                                 "/swagger-resources/**").permitAll()  // 인증 없이 접근 가능한 경로
                         .anyRequest().authenticated()  // 그 외 요청은 인증 필요
                 )
+
+                // 세션 관리 설정 추가
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 
                 // HTTPS 설정
                 .requiresChannel(channel -> channel
