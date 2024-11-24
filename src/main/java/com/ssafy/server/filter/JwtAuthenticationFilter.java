@@ -34,10 +34,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/users/regist-user",
             "/kakao",
             "/regist-kakao",
-            "kakao-login",
-            "/swagger-ui/*",
-            "/v3/api-docs/*",
-            "/swagger-resources/*"
+            "/kakao-login",
+            "/swagger-ui",
+            "/v3/api-docs",
+            "/swagger-resources",
+            "/"
     );
 
     @Override
