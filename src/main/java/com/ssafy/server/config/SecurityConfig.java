@@ -29,10 +29,15 @@ public class SecurityConfig {
         log.info("security filter chain에 들어옴");
         http
                 // CORS 설정 활성화
-                .cors(cors -> cors.configure(http))
+                .cors(cors -> {
+                    cors.configure(http);
+                    log.info("CORS 설정이 잘 적용됨");
+                })
 
                 // CSRF 보호 비활성화
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> {csrf.disable();
+                    log.info("CSRF 비활성화됨");
+                })
 
                 // JWT 인증 필터 추가
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -72,6 +77,7 @@ public class SecurityConfig {
                 // 로그아웃 비활성화
                 .logout(logout -> logout.disable());
 
+        log.info("Security Filter Chain configuration completed");
         return http.build();
     }
 }
