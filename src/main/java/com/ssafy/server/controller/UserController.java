@@ -39,6 +39,7 @@ public class UserController {
     public ResponseEntity<String> registUser(@RequestBody User user, HttpServletResponse response){
 
         int successUser = userService.registUser(user);
+        System.out.println("회원가입 성공한 유저 cnt ::: " + successUser);
         if (successUser > 0) {
 
             return ResponseEntity.ok("Regist user successfully");

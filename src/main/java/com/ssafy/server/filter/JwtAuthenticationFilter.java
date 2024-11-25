@@ -44,6 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
+        log.info("filter를 거치지 않는 API입니다.");
         String path = request.getRequestURI();
         return EXCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
     }
