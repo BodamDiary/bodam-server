@@ -19,6 +19,7 @@ public class PdfGeneratorService {
     public void generatePdf(String analysisResult, HttpServletResponse response) {
         try {
             // 메모리에서 PDF 생성
+            System.out.println("generate pdf까지 들어옴");
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             PdfWriter writer = new PdfWriter(byteArrayOutputStream);
             PdfDocument pdfDocument = new PdfDocument(writer);
@@ -26,17 +27,22 @@ public class PdfGeneratorService {
 
             String fontPath = getClass().getClassLoader().getResource("font/Pretendard-Bold.ttf").getPath();
             PdfFont BoldFont = PdfFontFactory.createFont(FontProgramFactory.createFont(fontPath), "Identity-H");
+            System.out.println("font 설정 완료 :: " + BoldFont + " ||| " + "font path :" + fontPath);
             Paragraph paragraph = new Paragraph("보담 발달 보고서")
                     .setFont(BoldFont)
                     .setFontSize(20);
 
             document.add(paragraph);
+            System.out.println("document.add(paragraph) 성공~");
 
             // 한글 폰트 설정
             // Spring에서 classpath 경로로 리소스 읽기
             fontPath = getClass().getClassLoader().getResource("font/Pretendard-Regular.ttf").getPath();
+            System.out.println("Spring에서 classpath 경로로 리소스 읽기 1");
             PdfFont koreanFont = PdfFontFactory.createFont(FontProgramFactory.createFont(fontPath), "Identity-H");
+            System.out.println("Spring에서 classpath 경로로 리소스 읽기 2");
             document.setFont(koreanFont);
+            System.out.println("Spring에서 classpath 경로로 리소스 읽기 3");
 
             // PDF에 분석 결과 추가
             document.add(new Paragraph(analysisResult));
