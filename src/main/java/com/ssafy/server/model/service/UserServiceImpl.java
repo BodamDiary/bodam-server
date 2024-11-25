@@ -36,21 +36,28 @@ public class UserServiceImpl implements UserService{
     @Override
     public int registUser(User user) {
         if (user.getEmail() == null || user.getEmail().isEmpty() || user.getPassword() == null || user.getUserName() == null || user.getUserName().isEmpty() || user.getNickname() == null || user.getNickname().isEmpty()) {
+            System.out.println("user getEmail" + user.getEmail());
+            System.out.println("user getPassword" + user.getPassword());
+            System.out.println("user getUserName" + user.getUserName());
+            System.out.println("user getNickname" + user.getNickname());
             return -1;
         }
 
+        System.out.println("1번 위치에서 regist User fail");
         String pw = user.getPassword();
 
         Pattern pattern = Pattern.compile(PW_PATTERN);
         boolean isPwValid = pattern.matcher(pw).matches();
-
+        System.out.println("pw가 유효한가::: "+ isPwValid);
         if (isPwValid) {
+            System.out.println("유효했다고 판단");
             String salt = OpenCrypt.encryptPw(user);
             int res = userMapper.insertUser(user);
             saltMapper.insertSecuInfo(user.getUserId(), salt);
 
             return res;
         } else {
+            System.out.println("유효하지 않다고 판단");
             return -1;
         }
     }
