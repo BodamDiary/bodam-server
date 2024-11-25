@@ -43,14 +43,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/swagger-resources"
     );
 
+    private static final List<String> INCLUDE_URLS = Arrays.asList(
+            "/users/user-info",
+            "/diary"
+    );
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         log.info("filter를 거치지 않는 API입니다.");
         String path = request.getRequestURI();
         log.info("현재 요청 URI: {}", path);
-        boolean shouldNotFilter = EXCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
-        log.info("필터 제외 여부: {}", shouldNotFilter);
-        return EXCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
+        boolean isExcluded = EXCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
+
+        boolean isIncluded = INCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
+
+        boolean shouldNotFilter = isExcluded || !isIncluded;
+
+        log.info("Path: {}, Excluded: {}, Included: {}, Should Not Filter: {}",
+                path, isExcluded, isIncluded, shouldNotFilter);
+        return shouldNotFilter;
     }
 
     @Override
