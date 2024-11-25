@@ -53,15 +53,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         log.info("filter를 거치지 않는 API입니다.");
         String path = request.getRequestURI();
         log.info("현재 요청 URI: {}", path);
-        boolean isExcluded = EXCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
 
-        boolean isIncluded = INCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
+        // INCLUDE_URLS에 있는 경로라면 무조건 필터 통과 (shouldNotFilter = false)
+        boolean isIncluded = INCLUDE_URLS.stream()
+                .anyMatch(url -> path.startsWith(url));
+        if (isIncluded) {
+            log.info("Path: {} is in INCLUDE_URLS, will be filtered", path);
+            return false;
+        }
 
-        boolean shouldNotFilter = isExcluded || !isIncluded;
+        // INCLUDE_URLS에 없는 경로는 EXCLUDE_URLS 확인
+        boolean isExcluded = EXCLUDE_URLS.stream()
+                .anyMatch(url -> path.startsWith(url));
 
-        log.info("Path: {}, Excluded: {}, Included: {}, Should Not Filter: {}",
-                path, isExcluded, isIncluded, shouldNotFilter);
-        return shouldNotFilter;
+        log.info("Path: {}, Excluded: {}, Will{} be filtered",
+                path, isExcluded, isExcluded ? " not" : "");
+
+        return isExcluded;
     }
 
     @Override
