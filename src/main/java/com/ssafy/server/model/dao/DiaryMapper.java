@@ -20,4 +20,5 @@ public interface DiaryMapper {
 
     int updateDiary(Diary diary);
 
+    List<String> selectDiaryImage(int diaryId);
 }

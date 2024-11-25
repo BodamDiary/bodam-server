@@ -7,9 +7,6 @@ import com.ssafy.server.model.service.DiaryService;
 import com.ssafy.server.model.service.UserService;
 import com.ssafy.server.model.service.UserServiceImpl;
 import com.ssafy.server.util.JwtTokenProvider;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springdoc.core.service.GenericResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.image.ImageProducer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +67,11 @@ public class DiaryController {
             if (diary.getUserId() != userId) {
                 System.out.println("userId not matching");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            List<String> imagePath = diaryService.getDiaryImage(diaryId);
+            System.out.println(imagePath);
+            if (imagePath != null) {
+                diary.setFilePaths(imagePath);
             }
             System.out.println(diary);
             return ResponseEntity.ok(diary);
