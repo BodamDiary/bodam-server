@@ -36,10 +36,16 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 // CORS 설정 활성화
-                .cors(cors -> cors.configure(http))
+                .cors(cors -> {
+                    cors.configure(http);
+                    System.out.println("CORS 설정 활성화 지나감");
+                })
 
                 // CSRF 보호 비활성화
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> {
+                    csrf.disable();
+                    System.out.println("CSRF 보호 비활성화 지나감");
+                })
 
                 // JWT 인증 필터 추가
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -53,18 +59,26 @@ public class SecurityConfig {
                 )
 
                 // HTTPS 설정
-                .requiresChannel(channel -> channel
+                .requiresChannel(channel -> {channel
                         .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
-                        .requiresSecure()
+                        .requiresSecure();
+                            System.out.println("https 설정 지나감");
+
+                }
                 )
 
                 // Frame Options 설정
-                .headers(headers -> headers
-                        .frameOptions(frame -> frame.sameOrigin())
-                )
+                .headers(headers -> {
+                    headers
+                        .frameOptions(frame -> frame.sameOrigin());
+                    System.out.println("FrameOption 설정 지나감");
+                })
 
                 // 로그아웃 비활성화
-                .logout(logout -> logout.disable());
+                .logout(logout -> {
+                    logout.disable();
+                    System.out.println("로그아웃 비활성화 지나감");
+                });
 
         return http.build();
     }

@@ -3,6 +3,7 @@ package com.ssafy.server.filter;
 import com.ssafy.server.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Slf4j
 @Component
+@WebFilter
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
