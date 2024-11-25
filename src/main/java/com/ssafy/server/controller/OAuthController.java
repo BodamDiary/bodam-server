@@ -50,7 +50,7 @@ public class OAuthController {
 
     @GetMapping("/kakao-login")
     public String kakaoCallback(String code, HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(true);
 
         log.info("카카오 콜백 호출 - 인가 코드: {}", code);
 
@@ -98,6 +98,14 @@ public class OAuthController {
 
         String uToken = jwtTokenProvider.generateJwt(kakaoMember.getUserId(), 30);
         session.setAttribute("uToken", uToken);
+
+        Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+        sessionCookie.setHttpOnly(true);
+        sessionCookie.setSecure(true); // HTTPS 필수
+        sessionCookie.setPath("/");
+        sessionCookie.setDomain("bodam.site"); // 도메인 설정
+        sessionCookie.setMaxAge(1800); // 30분
+        response.addCookie(sessionCookie);
 
         return "redirect:"+prodUrl+"dashboard";
     }
