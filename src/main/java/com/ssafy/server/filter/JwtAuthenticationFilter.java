@@ -60,6 +60,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("try에 들어옴");
             HttpSession session = request.getSession(false);
             log.info("request.getSession 지나감");
+            log.info("session :::: " + session);
+            log.info("session.id ::" + session.getId());
             if (session == null) {
                 log.info("세션이 존재하지 않습니다.");
                 throw new UnauthorizedException("세션이 존재하지 않습니다.");
