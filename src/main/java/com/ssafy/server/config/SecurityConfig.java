@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -42,6 +43,17 @@ public class SecurityConfig {
 
                 // JWT 인증 필터 추가
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // ... 다른 설정들 ...
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)  // ALWAYS 대신 IF_REQUIRED 사용
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false))
+
+                // 세션 쿠키 설정
+                .sessionManagement(session -> session
+                        .sessionFixation().migrateSession()  // 세션 고정 공격 방지
+                        .invalidSessionUrl("/login"))  // 세션이 유효하지 않을 때 리다이렉트
 
                 // 요청 URL별 인증 설정
                 .authorizeHttpRequests(auth -> auth
