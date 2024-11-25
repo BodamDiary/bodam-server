@@ -82,17 +82,14 @@ public class OAuthController {
             session.setAttribute("emailToken", emailToken);
             log.info("신규 사용자 확인 - 세션 ID: {}", session.getId());
 
-            ResponseCookie cookie = ResponseCookie.from("email", email)
-                    .path("/")
-                    .sameSite("None")
-                    .httpOnly(true)
-                    .secure(true)
-                    .domain("bodam.site")
-                    .maxAge(3600)
-                    .build();
-
-            response.addHeader("Set-Cookie", cookie.toString());
-            log.info("이메일 쿠키 생성 완료 - 이메일: {}, 쿠키 값: {}", email, cookie.toString());
+            // 쿠키 설정
+            Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+            sessionCookie.setHttpOnly(true);
+            sessionCookie.setSecure(true); // HTTPS 필수
+            sessionCookie.setPath("/");
+            sessionCookie.setDomain("bodam.site"); // 도메인 설정
+            sessionCookie.setMaxAge(1800); // 30분
+            response.addCookie(sessionCookie);
 
             return "redirect:"+prodUrl+"kakao-signup";
         }
