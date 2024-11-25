@@ -55,6 +55,11 @@ public class DiaryServiceImpl implements DiaryService {
     }
 
     @Override
+    public List<String> getDiaryImage(int diaryId) {
+        return diaryMapper.selectDiaryImage(diaryId);
+    }
+
+    @Override
     public List<String> uploadDiaryImages(MultipartFile[] files, int diaryId) {
         if (files == null || files.length == 0) {
             return new ArrayList<>();

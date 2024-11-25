@@ -18,4 +18,5 @@ public interface DiaryService {
 
     boolean updateDiary(Diary diary);
 
+    List<String> getDiaryImage(int diaryId);
 }
