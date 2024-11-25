@@ -20,5 +20,4 @@ public interface UserMapper {
 
     int deleteUser(int userId);
 
-    int updateProfileImage(User user);
 }

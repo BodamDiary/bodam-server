@@ -39,10 +39,5 @@
         WHERE user_id = #{userId}
     </delete>
 
-    <update id="updateProfileImage" parameterType="User">
-        Update users
-        Set profile_image = #{profileImage}
-        WHERE user_id = #{userId}
-    </update>
 
 </mapper>
