@@ -25,7 +25,7 @@ public class PdfGeneratorService {
             PdfDocument pdfDocument = new PdfDocument(writer);
             Document document = new Document(pdfDocument);
 
-            String fontPath = "/home/ubuntu/backend/web/bodam-server/src/main/resources/font/Pretendard-Bold.ttf";
+            String fontPath = "/font/Pretendard-Bold.ttf";
             PdfFont BoldFont = PdfFontFactory.createFont(FontProgramFactory.createFont(fontPath), "Identity-H");
             System.out.println("font 설정 완료 :: " + BoldFont + " ||| " + "font path :" + fontPath);
             Paragraph paragraph = new Paragraph("보담 발달 보고서")
@@ -37,7 +37,7 @@ public class PdfGeneratorService {
 
             // 한글 폰트 설정
             // Spring에서 classpath 경로로 리소스 읽기
-            fontPath = "/home/ubuntu/backend/web/bodam-server/src/main/resources/font/Pretendard-Regular.ttf";
+            fontPath = "/font/Pretendard-Regular.ttf";
             System.out.println("Spring에서 classpath 경로로 리소스 읽기 1");
             PdfFont koreanFont = PdfFontFactory.createFont(FontProgramFactory.createFont(fontPath), "Identity-H");
             System.out.println("Spring에서 classpath 경로로 리소스 읽기 2");
