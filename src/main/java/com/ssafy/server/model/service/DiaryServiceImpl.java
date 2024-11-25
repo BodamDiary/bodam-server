@@ -25,6 +25,7 @@ public class DiaryServiceImpl implements DiaryService {
     @Override
     public List<Diary> getAllDiaries(int userId) {
         //사용자 검증 필요
+        System.out.println("get all diaries 들어옴");
         return diaryMapper.selectAllDiaries(userId);
     }
 

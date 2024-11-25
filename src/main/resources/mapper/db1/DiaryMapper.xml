@@ -7,7 +7,7 @@
         SELECT A.diary_id, A.title, C.file_path, A.body, A.study_content, A.created_at
         FROM diary_posts A
         LEFT OUTER JOIN diary_images C ON A.diary_id = C.diary_id
-        WHERE A.user_id = 10041
+        WHERE A.user_id = #{userId}
         AND C.id = (
         SELECT MAX(id)
         FROM diary_images B

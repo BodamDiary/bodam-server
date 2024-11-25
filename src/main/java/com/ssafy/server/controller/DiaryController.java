@@ -40,18 +40,24 @@ public class DiaryController {
     ResponseEntity<List<Diary>> getAllDiaries(Authentication authentication) {
 
         int userId = Integer.parseInt(authentication.getName());
+        System.out.println("get-all-diaries userID : " + userId);
 
         List<Diary> list = diaryService.getAllDiaries(userId);
+        for (Diary diary : list) {
+            System.out.println("diary : " + diary);
+        }
 
         if (list != null) {
             if (!list.isEmpty()) {
+                System.out.println("list size : 리스트가 널이 아닙니다. : " + list.size());
                 return ResponseEntity.ok(list);
             }
             else {
+                System.out.println("리스트가 널입니다.");
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
         }
-
+        System.out.println("badRequest입니다.");
         return ResponseEntity.badRequest().build();
     }
 
