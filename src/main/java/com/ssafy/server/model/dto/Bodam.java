@@ -1,22 +1,27 @@
 package com.ssafy.server.model.dto;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDate;
 
 public class Bodam {
 
-    private int userId, bodamId, communicationAbility, cognitiveAbility, performanceAbility;
-    private String bodamName, bodamGender;
+    private int bodamId, communicationAbility, cognitiveAbility, performanceAbility;
+    private String bodamName;
 
-    private Date birthday;
+    private LocalDate birthday;
 
-    public int getUserId() {
-        return userId;
+    public String getStringBirthday() {
+        return stringBirthday;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setStringBirthday(String stringBirthday) {
+        this.stringBirthday = stringBirthday;
     }
+
+    private String stringBirthday;
+
+    private Gender bodamGender;
 
     public int getBodamId() {
         return bodamId;
@@ -26,12 +31,12 @@ public class Bodam {
         this.bodamId = bodamId;
     }
 
-    public int getCommunicationAbility() {
+    public int getCommunivationAbility() {
         return communicationAbility;
     }
 
-    public void setCommunicationAbility(int communicationAbility) {
-        this.communicationAbility = communicationAbility;
+    public void setCommunivationAbility(int communivationAbility) {
+        this.communicationAbility = communivationAbility;
     }
 
     public int getCognitiveAbility() {
@@ -58,33 +63,32 @@ public class Bodam {
         this.bodamName = bodamName;
     }
 
-    public String getBodamGender() {
-        return bodamGender;
-    }
-
-    public void setBodamGender(String bodamGender) {
-        this.bodamGender = bodamGender;
-    }
-
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public Gender getBodamGender() {
+        return bodamGender;
+    }
+
+    public void setBodamGender(Gender bodamGender) {
+        this.bodamGender = bodamGender;
     }
 
     @Override
     public String toString() {
         return "Bodam{" +
-                "userId=" + userId +
-                ", bodamId=" + bodamId +
+                "bodamId=" + bodamId +
                 ", communicationAbility=" + communicationAbility +
                 ", cognitiveAbility=" + cognitiveAbility +
                 ", performanceAbility=" + performanceAbility +
                 ", bodamName='" + bodamName + '\'' +
-                ", bodamGender='" + bodamGender + '\'' +
                 ", birthday=" + birthday +
+                ", bodamGender=" + bodamGender +
                 '}';
     }
 }

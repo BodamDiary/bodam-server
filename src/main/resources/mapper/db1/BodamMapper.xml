@@ -5,8 +5,13 @@
 <mapper namespace="com.ssafy.server.model.dao.BodamMapper">
 
     <insert id="insertBodam" parameterType="Bodam" useGeneratedKeys="true" keyProperty="bodamId">
-        INSERT INTO bodams (bodam_id, bodam_name, bodam_gender, communication_ability, cognitive_ability, performance_ability)
-        VALUES (#{bodamId}, #{bodamName}, #{bodamGender}, #{communicationAbility}, #{cognitiveAbility}, #{performanceAbility})
+        INSERT INTO bodams (bodam_id, bodam_name, bodam_gender, communication_ability, cognitive_ability, performance_ability, birthday)
+        VALUES (#{bodamId}, #{bodamName}, #{bodamGender}, #{communicationAbility}, #{cognitiveAbility}, #{performanceAbility}, #{birthday})
+    </insert>
+
+    <insert id="insertFamily" parameterType="Family">
+        INSERT INTO family (user_id, bodam_id)
+        VALUES (#{userId}, #{bodamId})
     </insert>
 
     <select id="selectBodamByUser" parameterType="int" resultType="Bodam">
@@ -14,5 +19,24 @@
         FROM bodams
         WHERE bodam_id=#{bodamId}
     </select>
+
+    <select id="selectBodamIdByUser" parameterType="int" resultType="int">
+        SELECT (bodam_id)
+        FROM family
+        WHERE user_id=#{userId}
+    </select>
+
+    <update id="updateBodam" parameterType="int">
+        UPDATE bodams
+        SET bodam_name=#{bodamName}, bodam_gender=#{bodamGenger}, communication_ability=#{communicationAbility}, cognitive_ability=#{cognitiveAbility}, performance_ability=#{performanceAbility}, birthday=#{birthday}
+        WHERE bodam_id=#{bodamId}
+    </update>
+
+    <select id="selectUserIdByBodamId" parameterType="int" resultType="Integer">
+        SELECT user_id
+        FROM family
+        WHERE bodam_id=#{bodam_id}
+    </select>
+
 
 </mapper>
