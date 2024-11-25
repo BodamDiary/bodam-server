@@ -51,7 +51,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
@@ -79,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .password("")
                     .authorities(new SimpleGrantedAuthority("ROLE_USER"))
                     .build();
-
+            System.out.println("userDetails:::" + userDetails);
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities()
             );
@@ -87,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             filterChain.doFilter(request, response);
-
+            System.out.println("filter 검증 완료");
         } catch (UnauthorizedException e) {
             log.info("사용자를 찾을 수 없는 오류");
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
