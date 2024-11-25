@@ -7,6 +7,16 @@ public class Content {
     private String url;
     private String tag;
     private String description;
+    private String thumbnail;
+    private String youtubeUrl;
+
+    public String getYoutubeUrl() {
+        return youtubeUrl;
+    }
+
+    public void setYoutubeUrl(String youtubeUrl) {
+        this.youtubeUrl = youtubeUrl;
+    }
 
     public String getThumbnail() {
         return thumbnail;
@@ -16,7 +26,6 @@ public class Content {
         this.thumbnail = thumbnail;
     }
 
-    private String thumbnail;
 
     public int getContentId() {
         return contentId;
@@ -76,6 +85,7 @@ public class Content {
                 ", tag='" + tag + '\'' +
                 ", description='" + description + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +
+                ", youtubeUrl='" + youtubeUrl + '\'' +
                 '}';
     }
 }
