@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Slf4j
 @Component
-@WebFilter
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -48,6 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         log.info("filter를 거치지 않는 API입니다.");
         String path = request.getRequestURI();
+        log.info("현재 요청 URI: {}", path);
+        boolean shouldNotFilter = EXCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
+        log.info("필터 제외 여부: {}", shouldNotFilter);
         return EXCLUDE_URLS.stream().anyMatch(url -> path.startsWith(url));
     }
 
@@ -58,19 +60,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
         log.info("do filter에 들어옴");
         try {
-            log.info("try에 들어옴");
-            HttpSession session = request.getSession(false);
-            log.info("request.getSession 지나감");
-            log.info("session :::: " + session);
-            log.info("session.id ::" + session.getId());
-            if (session == null) {
-                log.info("세션이 존재하지 않습니다.");
-                throw new UnauthorizedException("세션이 존재하지 않습니다.");
+            // 헤더에서 토큰을 찾도록 수정
+            String uToken = request.getHeader("Authorization");
+            if (uToken == null || !uToken.startsWith("Bearer ")) {
+                throw new UnauthorizedException("토큰이 없거나 유효하지 않습니다.");
             }
 
-            String uToken = (String) session.getAttribute("uToken");
-            if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
-                log.info("유효하지 않은 토큰입니다.");
+            // Bearer 접두사 제거
+            uToken = uToken.substring(7);
+
+            if (!jwtTokenProvider.validToken(uToken)) {
                 throw new UnauthorizedException("유효하지 않은 토큰입니다.");
             }
 
@@ -80,15 +79,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .password("")
                     .authorities(new SimpleGrantedAuthority("ROLE_USER"))
                     .build();
-            System.out.println("userDetails:::" + userDetails);
+
             Authentication authentication = new UsernamePasswordAuthenticationToken(
                     userDetails, null, userDetails.getAuthorities()
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
             filterChain.doFilter(request, response);
-            System.out.println("filter 검증 완료");
+
+            log.info("Successfully processed authentication for user ID: {}", userId);
         } catch (UnauthorizedException e) {
             log.info("사용자를 찾을 수 없는 오류");
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
