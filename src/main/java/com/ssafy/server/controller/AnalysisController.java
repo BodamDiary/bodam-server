@@ -2,6 +2,7 @@ package com.ssafy.server.controller;
 
 import com.ssafy.server.model.service.DiaryAnalysisService;
 import com.ssafy.server.model.service.PdfGeneratorService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,12 +25,13 @@ public class AnalysisController {
     }
 
     @GetMapping("/analyze-diaries")
-    public ResponseEntity<?> analyzeDiaries(Authentication authentication) {
+    public ResponseEntity<String> analyzeDiaries(Authentication authentication, HttpServletResponse response) {
         int userId = Integer.parseInt(authentication.getName());
         try {
             String analysisResult = diaryAnalysisService.analyzeDiaries(userId);
-            String pdfUrl = pdfGeneratorService.generatePdf(analysisResult);
-            return ResponseEntity.ok(Map.of("pdfUrl", pdfUrl));
+            System.out.println("analyzeDiaries:"+analysisResult);
+            pdfGeneratorService.generatePdf(analysisResult, response);
+            return ResponseEntity.ok("pdf generated");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }

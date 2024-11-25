@@ -4,15 +4,27 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.server.model.dao.DiaryMapper">
     <select id="selectAllDiaries" parameterType="int" resultType="Diary">
-        SELECT diary_id, title, body, study_content, created_at
-        FROM diary_posts
-        WHERE user_id = #{userId}
+        SELECT A.diary_id, A.title, C.file_path, A.body, A.study_content, A.created_at
+        FROM diary_posts A
+        LEFT OUTER JOIN diary_images C ON A.diary_id = C.diary_id
+        WHERE A.user_id = 10041
+        AND C.id = (
+        SELECT MAX(id)
+        FROM diary_images B
+        WHERE A.diary_id = B.diary_id
+        );
     </select>
 
     <select id="selectDiary" parameterType="int" resultType="Diary">
         SELECT diary_id, A.user_id, title, body, A.created_at, study_content, nickname
         FROM diary_posts A inner join users B ON A.user_id=B.user_id
         WHERE diary_id = #{diaryId}
+    </select>
+
+    <select id="selectDiaryImage" parameterType="int" resultType="String">
+        SELECT file_path
+        FROM diary_images
+        WHERE diary_id=#{diaryId}
     </select>
 
     <delete id="deleteDiary" parameterType="int">

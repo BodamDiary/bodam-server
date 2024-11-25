@@ -8,9 +8,30 @@ import java.util.List;
 public class Diary {
 
     private int diaryId, userId;
-    private String title, body, studyContent, nickname;
+    private String title;
+    private String body;
+    private String studyContent;
+    private String nickname;
+    private String filePath;
+    private List<String> filePaths;
     private Date createdAt;
 
+
+    public List<String> getFilePaths() {
+        return filePaths;
+    }
+
+    public void setFilePaths(List<String> filePaths) {
+        this.filePaths = filePaths;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
 
     public String getNickname() {
         return nickname;
@@ -68,5 +89,17 @@ public class Diary {
         this.createdAt = createdAt;
     }
 
-
+    @Override
+    public String toString() {
+        return "Diary{" +
+                "diaryId=" + diaryId +
+                ", userId=" + userId +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", studyContent='" + studyContent + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", filePath='" + filePath + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }
