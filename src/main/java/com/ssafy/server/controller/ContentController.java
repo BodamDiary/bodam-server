@@ -2,6 +2,8 @@ package com.ssafy.server.controller;
 
 import com.ssafy.server.model.dto.Content;
 import com.ssafy.server.model.service.ContentService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +38,11 @@ public class ContentController {
     }
 
     @GetMapping("/get-today-content")
-    public ResponseEntity<List<Content>> getTodayContent() {
+    public ResponseEntity<List<Content>> getTodayContent(HttpServletRequest request) {
         log.info("오늘의 콘텐츠 가져오기");
         List<Content> list = contentService.getTodayContent();
-
+        HttpSession session = request.getSession(false);
+        log.info("세션아이디" + session.getId());
         if (list == null || list.isEmpty()) {
             log.info("콘텐츠 없음");
             return ResponseEntity.internalServerError().build();

@@ -39,6 +39,7 @@ public class UserController {
     public ResponseEntity<String> registUser(@RequestBody User user, HttpServletResponse response){
 
         int successUser = userService.registUser(user);
+        System.out.println("회원가입 성공한 유저 cnt ::: " + successUser);
         if (successUser > 0) {
 
             return ResponseEntity.ok("Regist user successfully");
@@ -50,12 +51,13 @@ public class UserController {
 
 
     @GetMapping("/get-user")
-    public ResponseEntity<User> getUser(Authentication authentication){
+    public ResponseEntity<User> getUser(HttpServletRequest request,  Authentication authentication){
 
         int userId = Integer.parseInt(authentication.getName());
         System.out.println("userId="+userId);
         User user = userService.getUser(userId);
         System.out.println(user);
+        System.out.println("세션 ID: " + request.getSession().getId());
 
         if (user != null) {
 

@@ -28,7 +28,7 @@
 
     <update id="updateUser" parameterType="User">
         UPDATE users
-        SET kakao_id = #{kakaoId}, nickname=#{nickname}, user_name=#{userName}, password=#{password}, profile_image=#{profileImage}, address=#{address}, phone_number=#{phoneNumber},
+        SET nickname=#{nickname}, user_name=#{userName}, password=#{password}, profile_image=#{profileImage}, address=#{address}, phone_number=#{phoneNumber},
         agree_condition = CASE WHEN #{agreeCondition} = true THEN 1 ELSE 0 END,
         is_oauth = CASE WHEN #{isOauth} = true THEN 1 ELSE 0 END
         WHERE user_id = #{userId}
