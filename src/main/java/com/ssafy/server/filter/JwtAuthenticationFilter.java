@@ -120,6 +120,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
             log.info("Successfully processed authentication for user ID: {}", userId);
+            log.info("filter를 다 통과했습니다.");
         } catch (UnauthorizedException e) {
             log.info("사용자를 찾을 수 없는 오류");
             response.setStatus(HttpStatus.UNAUTHORIZED.value());

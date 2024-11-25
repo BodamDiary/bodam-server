@@ -4,12 +4,15 @@ import com.ssafy.server.model.dto.User;
 import com.ssafy.server.model.service.S3Uploader;
 import com.ssafy.server.model.service.UserService;
 import com.ssafy.server.util.JwtTokenProvider;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
@@ -101,26 +105,56 @@ public class UserController {
 
     @PostMapping("/login-user")
     public ResponseEntity<String> loginUser(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
-
+        log.info("로그인 시도 시작!");
         String email = user.getEmail();
         String pw = user.getPassword();
         if (email == null || email.isEmpty() || pw == null || pw.isEmpty()) {
-            System.out.println("null");
+            log.error("이메일 또는 비밀번호가 비어있습니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
         User loginUser = userService.loginUser(email, pw);
 
         if (loginUser != null) {
-            System.out.println("loginUser found");
+            log.info("사용자 인증 성공: {}", email);
             String uToken = jwtTokenProvider.generateJwt(loginUser.getUserId(), 30);
-            HttpSession session = request.getSession();
-            session.setAttribute("uToken", uToken);
 
-            return ResponseEntity.status(HttpStatus.OK).body(uToken);
+            // 세션 생성 및 설정
+            HttpSession session = request.getSession(true); // 새 세션 강제 생성
+            log.info("세션 생성됨, ID: {}", session.getId());
+            session.setAttribute("uToken", uToken);
+            session.setMaxInactiveInterval(1800); // 30분
+
+            // 쿠키 설정
+            Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+            sessionCookie.setHttpOnly(true);
+            sessionCookie.setSecure(true); // HTTPS 필수
+            sessionCookie.setPath("/");
+            sessionCookie.setDomain("bodam.site"); // 도메인 설정
+            sessionCookie.setMaxAge(1800); // 30분
+            response.addCookie(sessionCookie);
+
+            // 응답 헤더 설정
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, getCookieString(sessionCookie))
+                    .body(uToken);
         }
-        System.out.println("loginUser Not Found");
+
+        log.error("사용자 인증 실패: {}", email);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    // 쿠키 문자열 생성 헬퍼 메소드
+    private String getCookieString(Cookie cookie) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(cookie.getName()).append("=").append(cookie.getValue())
+                .append("; Path=").append(cookie.getPath())
+                .append("; Domain=").append(cookie.getDomain())
+                .append("; Max-Age=").append(cookie.getMaxAge())
+                .append("; HttpOnly")
+                .append("; Secure")
+                .append("; SameSite=Lax");
+        return sb.toString();
     }
 
     @PostMapping("/update-user/profile-image/upload")
