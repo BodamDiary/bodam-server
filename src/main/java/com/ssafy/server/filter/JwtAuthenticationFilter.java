@@ -60,20 +60,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
         log.info("do filter에 들어옴");
         try {
-            // 헤더에서 토큰을 찾도록 수정
-            String uToken = request.getHeader("Authorization");
-            if (uToken == null || !uToken.startsWith("Bearer ")) {
-                throw new UnauthorizedException("토큰이 없거나 유효하지 않습니다.");
+            // 세션에서 토큰 가져오기
+            HttpSession session = request.getSession(false);
+            log.info("Session ID: {}", session != null ? session.getId() : "null");
+
+            if (session == null) {
+                log.error("Session not found");
+                throw new UnauthorizedException("세션이 존재하지 않습니다.");
             }
 
-            // Bearer 접두사 제거
-            uToken = uToken.substring(7);
+            String uToken = (String) session.getAttribute("uToken");
+            log.info("Token from session: {}", uToken != null ? "exists" : "null");
 
-            if (!jwtTokenProvider.validToken(uToken)) {
+            if (uToken == null || !jwtTokenProvider.validToken(uToken)) {
+                log.error("Invalid token or token not found in session");
                 throw new UnauthorizedException("유효하지 않은 토큰입니다.");
             }
 
             int userId = jwtTokenProvider.getIdFromToken(uToken);
+            log.info("User ID extracted from token: {}", userId);
+
             UserDetails userDetails = User.builder()
                     .username(String.valueOf(userId))
                     .password("")
@@ -85,6 +91,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 세션 보안 설정
+            if (request.isSecure()) {
+                session.setAttribute("secure", true);
+                response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+            }
+
             filterChain.doFilter(request, response);
 
             log.info("Successfully processed authentication for user ID: {}", userId);
