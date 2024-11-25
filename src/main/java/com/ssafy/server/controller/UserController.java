@@ -51,12 +51,13 @@ public class UserController {
 
 
     @GetMapping("/get-user")
-    public ResponseEntity<User> getUser(Authentication authentication){
+    public ResponseEntity<User> getUser(HttpServletRequest request,  Authentication authentication){
 
         int userId = Integer.parseInt(authentication.getName());
         System.out.println("userId="+userId);
         User user = userService.getUser(userId);
         System.out.println(user);
+        System.out.println("세션 ID: " + request.getSession().getId());
 
         if (user != null) {
 
