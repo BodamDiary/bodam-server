@@ -4,18 +4,19 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.server.model.dao.DiaryMapper">
     <select id="selectAllDiaries" parameterType="int" resultType="Diary">
-        SELECT A.diary_id, A.title, C.file_path, A.body, A.study_content, A.created_at
-        FROM diary_posts A
-        LEFT OUTER JOIN diary_images C ON A.diary_id = C.diary_id
-        WHERE A.user_id = #{userId}
-        AND (
-        C.created_at = (
-        SELECT MAX(created_at)
-        FROM diary_images B
-        WHERE A.diary_id = B.diary_id
-        )
-        OR C.created_at IS NULL
-        );
+        SELECT
+        dp.*,
+        MIN(di.file_path) AS file_path
+        FROM
+        diary_posts dp
+        LEFT JOIN
+        diary_images di
+        ON
+        dp.diary_id = di.diary_id
+        WHERE
+        dp.user_id = #{userId}
+        GROUP BY
+        dp.diary_id;
     </select>
 
     <select id="selectDiary" parameterType="int" resultType="Diary">
