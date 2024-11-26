@@ -8,10 +8,13 @@
         FROM diary_posts A
         LEFT OUTER JOIN diary_images C ON A.diary_id = C.diary_id
         WHERE A.user_id = #{userId}
-        AND C.id = (
-        SELECT MAX(id)
+        AND (
+        C.created_at = (
+        SELECT MAX(created_at)
         FROM diary_images B
         WHERE A.diary_id = B.diary_id
+        )
+        OR C.created_at IS NULL
         );
     </select>
 
